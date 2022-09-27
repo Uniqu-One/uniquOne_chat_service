@@ -13,6 +13,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://eureka-server:8761/eureka
+      
 
 greeting:
   message: Welcome to the Simple E-commerce
