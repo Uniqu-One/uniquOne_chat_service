@@ -48,12 +48,34 @@ ext {
 }
 
 dependencies {
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Socket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+//	implementation 'org.springframework.boot:spring-boot-starter-rsocket'
+
+	// Openfeign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// MongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+
+	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Spring Web
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Eureka Client
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 }
