@@ -1,4 +1,4 @@
-package com.sparos.uniquone.msachatservice.enums;
+package com.sparos.uniquone.msachatservice.chat.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

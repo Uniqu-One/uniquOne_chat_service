@@ -1,6 +1,6 @@
 package com.sparos.uniquone.msachatservice.chat.domain;
 
-import com.sparos.uniquone.msachatservice.enums.ChatRoomType;
+import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;

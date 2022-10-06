@@ -3,8 +3,14 @@ package com.sparos.uniquone.msachatservice.chat.service.chatRoom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
+import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.redis.RedisSubscriber;
+import com.sparos.uniquone.msachatservice.outband.post.service.IPostConnect;
+import com.sparos.uniquone.msachatservice.outband.user.dto.UserResponseDto;
+import com.sparos.uniquone.msachatservice.outband.user.service.IUserConnect;
+import com.sparos.uniquone.msachatservice.utils.ChatRoomUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +35,8 @@ import java.util.Map;
 public class ChatRoomServiceImpl implements IChatRoomService {
 
     private final IChatRoomRepository iChatRoomRepository;
+    private final IUserConnect iUserConnect;
+    private final IPostConnect iPostConnect;
 
     private final RedisTemplate<String, Object> reactiveTemplate;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -42,14 +50,29 @@ public class ChatRoomServiceImpl implements IChatRoomService {
         topics = new HashMap<>();
     }
 
+    // 모든 채팅방 조회
     @Override
     public Flux<ChatRoom> findAllRoom() {
         return iChatRoomRepository.findAll();
     }
 
+    // 유저 채팅방 조회
     @Override
-    public Flux<ChatRoom> findAllUserRoom(Long userId) {
-        return null;
+    public Flux<ChatRoomOutDto> findAllUserRoom(Long userId) {
+        return iChatRoomRepository.findByActorIdOrReceiverId(userId, userId)
+//                .map(ChatRoomUtils::entityToChatRoomOutDto)
+                .map(chatRoom -> {
+                    if (chatRoom.getReceiverId().equals(userId)) {
+                        chatRoom.setReceiverId(chatRoom.getActorId());
+                        chatRoom.setType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
+                    }
+                    return chatRoom;
+                })
+                .map(chatRoom -> ChatRoomUtils.entityToChatRoomOutDto(
+                        chatRoom,
+                        iUserConnect.getUserInfo(chatRoom.getReceiverId()),
+                        iPostConnect.getPostInfo(chatRoom.getPostId())
+                        ));
     }
 
     @Override
