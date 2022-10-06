@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "uniquone-post-service/posts")
 public interface IPostConnect {
 
-    @GetMapping("/chat/postInfo/{postId}")
-    PostResponseDto getPostInfo(@PathVariable("postId") Long postId);
+    @GetMapping("/chat/postInfo/{postId}/{otherUserId}")
+    PostResponseDto getPostInfo(@PathVariable("postId") Long postId, @PathVariable("otherUserId") Long otherUserId);
 
 }

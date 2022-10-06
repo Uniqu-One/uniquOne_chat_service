@@ -8,7 +8,6 @@ import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.redis.RedisSubscriber;
 import com.sparos.uniquone.msachatservice.outband.post.service.IPostConnect;
-import com.sparos.uniquone.msachatservice.outband.user.dto.UserResponseDto;
 import com.sparos.uniquone.msachatservice.outband.user.service.IUserConnect;
 import com.sparos.uniquone.msachatservice.utils.ChatRoomUtils;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +70,7 @@ public class ChatRoomServiceImpl implements IChatRoomService {
                 .map(chatRoom -> ChatRoomUtils.entityToChatRoomOutDto(
                         chatRoom,
                         iUserConnect.getUserInfo(chatRoom.getReceiverId()),
-                        iPostConnect.getPostInfo(chatRoom.getPostId())
+                        iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId())
                         ));
     }
 
@@ -81,15 +80,17 @@ public class ChatRoomServiceImpl implements IChatRoomService {
     }
 
     @Override
-    public Mono<ChatRoom> createRoom(ChatRoomDto chatRoomDto) {
-
-        return iChatRoomRepository.save(
+    public Mono<String> createRoom(ChatRoomDto chatRoomDto) {
+        // todo 중복 확인
+        //  postId로 cornId 찾아서 receiverId 검색
+        Mono<ChatRoom> chatRoom = iChatRoomRepository.save(
                 ChatRoom.builder()
                         .chatType(chatRoomDto.getChatType())
                         .actorId(chatRoomDto.getActorId())
                         .receiverId(chatRoomDto.getReceiverId())
                         .postId(chatRoomDto.getPostId())
                         .build());
+        return chatRoom.map(savedChatRoom -> savedChatRoom.getId());
     }
 
     @Override

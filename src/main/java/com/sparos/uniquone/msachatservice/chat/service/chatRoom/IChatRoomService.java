@@ -19,7 +19,7 @@ public interface IChatRoomService {
     Mono<ChatRoom> findRoomById(String roomId);
 
     // 채팅방 생성
-    Mono<ChatRoom> createRoom(ChatRoomDto chatRoomDto);
+    Mono<String> createRoom(ChatRoomDto chatRoomDto);
 
     // 채팅방 입장
     void enterChatRoom(String roomId);

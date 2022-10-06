@@ -11,16 +11,33 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/chat")
 public class ChatController {
 
     private final IChatRoomService iChatRoomService;
 
+    // todo userId 토큰 대체
+    // 유저 채팅방 목록
+    @GetMapping("/{userId}")
+    public Flux<ChatRoomOutDto> findAllUserRoom(@PathVariable Long userId) {
+        return iChatRoomService.findAllUserRoom(userId);
+    }
+
+    // 채팅방 생성
+    @PostMapping("/room")
+    public Mono<String> createRoom(@RequestBody ChatRoomDto chatRoomDto) {
+        return iChatRoomService.createRoom(chatRoomDto);
+    }
+
+
+
+
+
+
     // 모든 채팅방 목록 반환
     @GetMapping("/test")
-    @ResponseBody
     public String test() {
         return "hello";
     }
@@ -28,30 +45,12 @@ public class ChatController {
     // todo 미사용
     // 모든 채팅방 목록 반환
     @GetMapping("/rooms")
-    @ResponseBody
     public Flux<ChatRoom> room() {
         return iChatRoomService.findAllRoom();
     }
 
-    // todo userId 토큰 대체
-    // 모든 채팅방 목록 반환
-    @GetMapping("/{userId}")
-    @ResponseBody
-    public Flux<ChatRoomOutDto> findAllUserRoom(@PathVariable Long userId) {
-        return iChatRoomService.findAllUserRoom(userId);
-    }
-
-
-    // 채팅방 생성
-    @PostMapping("/room")
-    @ResponseBody
-    public Mono<ChatRoom> createRoom(@RequestBody ChatRoomDto chatRoomDto) {
-        return iChatRoomService.createRoom(chatRoomDto);
-    }
-
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")
-    @ResponseBody
     public Mono<ChatRoom> roomInfo(@PathVariable String roomId) {
         return iChatRoomService.findRoomById(roomId);
     }
