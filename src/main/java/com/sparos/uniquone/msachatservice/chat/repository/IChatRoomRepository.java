@@ -12,5 +12,7 @@ public interface IChatRoomRepository extends ReactiveMongoRepository<ChatRoom, S
 
 //    Flux<ChatRoom> findByUserId(Long userId);
 
-    Flux<ChatRoom> findByActorIdOrReceiverId(Long actorId, Long receiverId);
+    Flux<ChatRoom> findByActorIdAndIsActorOrReceiverIdAndIsReceiver(Long actorId, Boolean isActor, Long receiverId, Boolean isReceiver);
+
+//    Flux<ChatRoom> findByIdActorIdAndIsActorOrReceiverIdAndIsReceiver(Long actorId, Boolean isActor, Long receiverId, Boolean isReceiver);
 }

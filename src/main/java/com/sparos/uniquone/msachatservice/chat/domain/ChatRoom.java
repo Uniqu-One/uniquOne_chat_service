@@ -2,6 +2,7 @@ package com.sparos.uniquone.msachatservice.chat.domain;
 
 import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,18 +20,23 @@ import java.time.LocalDateTime;
 public class ChatRoom implements Serializable {
 
     @Id
-    private String id;
+    private String id; // pk
 
+    @CreatedBy
     @Field(name = "user_id")
-    private Long actorId;
+    private Long actorId; // 유저 id
 
     @Field(name = "other_user_id")
-    private Long receiverId;
+    private Long receiverId; // 받는 유저 id
 
-    private Long postId;
+    private Long postId; // 게시물 id
+
+    private Boolean isActor; // 유저 참여 여부
+
+    private Boolean isReceiver; // 받는 유저 참여 여부
 
     //    @Enumerated(EnumType.STRING)
-    private ChatRoomType chatType;
+    private ChatRoomType chatType; // 채팅 타입 (SELLER, BUYER, NORMAL)
 
     @CreatedDate
     @Field(name = "reg_date")
@@ -43,5 +49,13 @@ public class ChatRoom implements Serializable {
 
     public void setType(ChatRoomType chatType) {
         this.chatType = chatType;
+    }
+
+    public void setActor(Boolean actor) {
+        isActor = actor;
+    }
+
+    public void setReceiver(Boolean receiver) {
+        isReceiver = receiver;
     }
 }
