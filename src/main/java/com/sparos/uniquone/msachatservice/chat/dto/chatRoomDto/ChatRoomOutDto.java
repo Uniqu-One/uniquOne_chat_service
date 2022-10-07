@@ -17,11 +17,13 @@ public class ChatRoomOutDto {
 
     private Long receiverId;
     private String receiverName;
+    private Boolean isReceiver; // 받는 유저 참여 여부
 
     private String cornImg;
 
     private Long postId;
     private String postImg;
+    private String postType;
 
     private String message;
     private String regDate;

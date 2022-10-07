@@ -1,11 +1,12 @@
 package com.sparos.uniquone.msachatservice.chat.controller;
 
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
+import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
-import com.sparos.uniquone.msachatservice.chat.service.chatRoom.IChatRoomService;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
+import com.sparos.uniquone.msachatservice.chat.service.IChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,7 +17,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/chat")
 public class ChatController {
 
-    private final IChatRoomService iChatRoomService;
+    private final IChatService iChatRoomService;
 
     // todo userId 토큰 대체
     // 유저 채팅방 목록
@@ -31,12 +32,20 @@ public class ChatController {
         return iChatRoomService.createRoom(chatRoomDto);
     }
 
+    // 채팅방 나가기
+    @PutMapping("/room")
+    public Mono<String> exitRoom(@RequestBody ChatRoomExitDto chatRoomExitDto) {
+        return iChatRoomService.exitRoom(chatRoomExitDto);
+    }
+
+    // 채팅 내용 가져오기
+    @GetMapping("/room/all/{roomId}/{userId}")
+    public Mono<Object> findAllChat(@PathVariable String roomId, @PathVariable Long userId) {
+        return iChatRoomService.findAllChat(roomId, userId);
+    }
 
 
-
-
-
-    // 모든 채팅방 목록 반환
+    // test
     @GetMapping("/test")
     public String test() {
         return "hello";

@@ -1,10 +1,15 @@
-package com.sparos.uniquone.msachatservice.chat.service.chatRoom;
+package com.sparos.uniquone.msachatservice.chat.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
+import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
 import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
+import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.redis.RedisSubscriber;
 import com.sparos.uniquone.msachatservice.outband.post.service.IPostConnect;
@@ -17,23 +22,22 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
 @RequiredArgsConstructor
 @Transactional
 @Service
-public class ChatRoomServiceImpl implements IChatRoomService {
+public class ChatServiceImpl implements IChatService {
 
     private final IChatRoomRepository iChatRoomRepository;
+    private final IChatRepository iChatRepository;
     private final IUserConnect iUserConnect;
     private final IPostConnect iPostConnect;
 
@@ -58,11 +62,12 @@ public class ChatRoomServiceImpl implements IChatRoomService {
     // 유저 채팅방 조회
     @Override
     public Flux<ChatRoomOutDto> findAllUserRoom(Long userId) {
-        return iChatRoomRepository.findByActorIdOrReceiverId(userId, userId)
+        return iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true)
 //                .map(ChatRoomUtils::entityToChatRoomOutDto)
                 .map(chatRoom -> {
                     if (chatRoom.getReceiverId().equals(userId)) {
                         chatRoom.setReceiverId(chatRoom.getActorId());
+                        chatRoom.setReceiver(chatRoom.getIsActor());
                         chatRoom.setType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
                     }
                     return chatRoom;
@@ -89,8 +94,64 @@ public class ChatRoomServiceImpl implements IChatRoomService {
                         .actorId(chatRoomDto.getActorId())
                         .receiverId(chatRoomDto.getReceiverId())
                         .postId(chatRoomDto.getPostId())
+                        .isActor(true)
+                        .isReceiver(true)
                         .build());
         return chatRoom.map(savedChatRoom -> savedChatRoom.getId());
+    }
+
+    @Override
+    public Mono<String> exitRoom(ChatRoomExitDto chatRoomDto) {
+
+        return iChatRoomRepository.findById(chatRoomDto.getChatRoomId())
+                .map(chatRoom -> {
+                    if (chatRoom.getReceiverId().equals(chatRoomDto.getUserId())) {
+                        chatRoom.setReceiver(false);
+                    } else {
+                        chatRoom.setActor(false);
+                    }
+                    return chatRoom;
+                })
+                .flatMap(iChatRoomRepository::save)
+                .map(savedChatRoom -> savedChatRoom.getId());
+    }
+
+    @Override
+    public Mono<Object> findAllChat(String roomId, Long userId) {
+        return iChatRepository.findByChatRoomId(roomId).collectList()
+                .map(chats -> {
+                    return iChatRoomRepository.findById(roomId)
+                            .map(chatRoom -> {
+                                if (chatRoom.getReceiverId().equals(userId)) {
+                                    chatRoom.setReceiverId(chatRoom.getActorId());
+                                    chatRoom.setReceiver(chatRoom.getIsActor());
+                                    chatRoom.setType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
+                                }
+                                return chatRoom;
+                            })
+                            .map(chatRoom -> ChatRoomUtils.entityToChatOutDto(
+                                    chatRoom,
+                                    iUserConnect.getUserInfo(chatRoom.getReceiverId()),
+                                    iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()),
+                                    chats)
+                            );
+                }
+
+        );
+
+
+    }
+
+    @Override
+    public Mono<Chat> sendChat(ChatDto chatDto) {
+
+        return iChatRepository.save(
+                Chat.builder()
+                        .senderId(chatDto.getSenderId())
+                        .chatRoomId(chatDto.getChatRoomId())
+                        .message(chatDto.getMessage())
+                        .build())
+                .map(savedChat -> savedChat);
     }
 
     @Override
@@ -104,6 +165,7 @@ public class ChatRoomServiceImpl implements IChatRoomService {
     }
 
 
+/*
     public <T> void sendMessage(WebSocketSession session, T message) {
         try {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
@@ -111,17 +173,7 @@ public class ChatRoomServiceImpl implements IChatRoomService {
             log.error(e.getMessage(), e);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
+*/
 
 
     /*// todo 삭제하기 노필요

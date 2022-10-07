@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ChatResponseDto {
 
-    private String sender;
+    private Long senderId;
     private String message;
     private LocalDateTime regDate;
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -13,11 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 public class ChatOutDto {
 
-    private Long chatRoomId;
+    private String chatRoomId;
 
     private Long postId;
-    private String postName;
-    private String postPrice;
+    private String postDsc;
+    private Long postPrice;
     private String postType; // todo enum으로 변경
     private Boolean isOffer;
 
