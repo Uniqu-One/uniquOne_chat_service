@@ -31,6 +31,7 @@ eureka:
       defaultZone: http://127.0.0.1:8761/eureka
 #      defaultZone: http://172.17.0.2:8761/eureka
 #      defaultZone: http://eureka-server:8761/eureka
+###dfjk
 
 logging:
   level:
