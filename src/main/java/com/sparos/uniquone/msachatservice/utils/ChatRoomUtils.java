@@ -4,6 +4,7 @@ import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatResponseDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatTestDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.outband.post.dto.PostResponseDto;
@@ -16,10 +17,11 @@ import java.util.List;
 
 public class ChatRoomUtils {
 
-    public static ChatRoomOutDto entityToChatRoomOutDto(ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto) {
+    public static ChatRoomOutDto entityToChatRoomOutDto(Chat chat, ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto) {
         // todo
         //  최근 chat 처리
         return ChatRoomOutDto.builder()
+//                .chatRoomId(chatRoom.getChatRoomId())
                 .chatRoomId(chatRoom.getId())
                 .chatType(chatRoom.getChatType())
                 .receiverId(userResponseDto.getUserId())
@@ -54,6 +56,30 @@ public class ChatRoomUtils {
                 .build();
     }
 
+    public static ChatRoom objectToChatRoom(ChatRoom chatRoom) {
+
+        return ChatRoom.builder()
+                .actorId(chatRoom.getActorId())
+                .receiverId(chatRoom.getReceiverId())
+                .postId(chatRoom.getPostId())
+                .isActor(chatRoom.getIsActor())
+                .isReceiver(chatRoom.getIsReceiver())
+                .chatType(chatRoom.getChatType())
+                .regDate(chatRoom.getRegDate())
+                .build();
+    }
+
+
+    public static Chat objectToChat(Chat chat) {
+
+        return Chat.builder()
+                .id(chat.getId())
+                .senderId(chat.getSenderId())
+                .chatRoomId(chat.getChatRoomId())
+                .message(chat.getMessage())
+                .build();
+    }
+
     public static ChatResponseDto entityToChatResponseDto(Chat chat) {
         return ChatResponseDto.builder()
                 .senderId(chat.getSenderId())
@@ -68,6 +94,23 @@ public class ChatRoomUtils {
                 .receiverId(chatRoomDto.getReceiverId())
                 .postId(chatRoomDto.getPostId())
                 .chatType(chatRoomDto.getChatType())
+                .build();
+    }
+
+    public static ChatTestDto test(Chat chat, ChatRoom chatRoom) {
+        return ChatTestDto.builder()
+                .chatId(chat.getId())
+                .senderId(chat.getSenderId())
+                .message(chat.getMessage())
+                .regDate(chat.getRegDate())
+                .chatRoomId(chatRoom.getId())
+                .actorId(chatRoom.getActorId())
+                .receiverId(chatRoom.getReceiverId())
+                .postId(chatRoom.getPostId())
+                .isActor(chatRoom.getIsActor())
+                .isReceiver(chatRoom.getIsReceiver())
+                .chatType(chatRoom.getChatType())
+                .roomRegDate(chatRoom.getRegDate())
                 .build();
     }
 

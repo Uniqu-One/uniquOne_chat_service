@@ -1,4 +1,4 @@
-package com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto;
+package com.sparos.uniquone.msachatservice.chat.dto.chatDto;
 
 import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
 import lombok.AllArgsConstructor;
@@ -7,23 +7,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatRoomDto {
+public class ChatTestDto {
 
-    // 나중에 없애기
+    private String chatId;
+
+    private Long senderId;
+    private String message;
+    private LocalDateTime regDate;
+
+    private String chatRoomId;
+
     private Long actorId;
-    // 나중에 없애기
     private Long receiverId;
-
     private Long postId;
+
+    private Boolean isActor;
+    private Boolean isReceiver;
 
     private ChatRoomType chatType;
 
-    private LocalDateTime regDate;
+    private LocalDateTime roomRegDate;
+
 
 }
