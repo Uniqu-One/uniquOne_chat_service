@@ -1,5 +1,9 @@
 package com.sparos.uniquone.msachatservice.chat.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -22,7 +26,6 @@ public class ChatRoom implements Serializable {
     @Id
     private String id; // pk
 
-    @CreatedBy
     @Field(name = "user_id")
     private Long actorId; // 유저 id
 
@@ -39,6 +42,8 @@ public class ChatRoom implements Serializable {
     private ChatRoomType chatType; // 채팅 타입 (SELLER, BUYER, NORMAL)
 
     @CreatedDate
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Field(name = "reg_date")
     private LocalDateTime regDate;
 

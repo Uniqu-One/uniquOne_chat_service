@@ -18,12 +18,15 @@ public class RedisController {
 
     @MessageMapping("/chat/message")
     public void message(ChatDto chatDto) {
-
+        System.err.println("getChatRoomId()" + chatDto.getChatRoomId());
+        System.err.println("getMessage" + chatDto.getMessage());
+        System.err.println("getSenderId()" + chatDto.getSenderId());
+        System.err.println("getType()" + chatDto.getType());
         if (ChatDto.MessageType.ENTER.equals(chatDto.getType())) {
             iChatService.enterChatRoom(chatDto.getChatRoomId());
 //            chatDto.setMessage(chatDto.getSenderId() + "님이 입장하셨습니다.");
         } else {
-            redisPublisher.publish(iChatService.getTopic(chatDto.getChatRoomId()), iChatService.sendChat(chatDto).block());
+            redisPublisher.publish(iChatService.getTopic(chatDto.getChatRoomId()), iChatService.sendChat(chatDto));
         }
 
     }
