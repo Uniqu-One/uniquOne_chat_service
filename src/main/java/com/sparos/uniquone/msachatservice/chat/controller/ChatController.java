@@ -7,6 +7,7 @@ import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
+import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.IChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,17 +25,18 @@ public class ChatController {
 
     private final IChatService iChatRoomService;
     private final IChatRepository iChatRepository;
+    private final IChatRoomRepository iChatRoomRepository;
 
     // todo userId 토큰 대체
     // 유저 채팅방 목록
     @GetMapping("/{userId}")
-    public List<ChatRoomOutDto> findAllUserRoom(@PathVariable Long userId) {
+    public Object findAllUserRoom(@PathVariable Long userId) {
         return iChatRoomService.findAllUserRoom(userId);
     }
 
     // 채팅방 생성
     @PostMapping("/room")
-    public String createRoom(@RequestBody ChatRoomDto chatRoomDto) {
+    public Object createRoom(@RequestBody ChatRoomDto chatRoomDto) {
         return iChatRoomService.createRoom(chatRoomDto);
     }
 
@@ -72,12 +75,22 @@ public class ChatController {
 
 
 
-    // 특정 채팅방 조회
+    // dbTest
     @GetMapping("/dbTest/{roomId}")
     public Chat test(@PathVariable String roomId) {
         System.err.println("dbTest");
-        return iChatRepository.findOneByChatRoomId(roomId);
+        return iChatRepository.findOneByChatRoomId(roomId).get();
     }
 
+
+    // dbTest
+    @GetMapping("/dbTest2")
+    public ChatRoom test2() {
+        System.err.println("dbTest2");
+//        return iChatRoomRepository.findOneIdByPostId(1l);
+        return iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
+                (2l,true, true, 1l, 3l, 3l, 1l).get();
+
+    }
 
 }

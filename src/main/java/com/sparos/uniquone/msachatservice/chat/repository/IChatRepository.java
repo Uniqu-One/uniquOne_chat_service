@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IChatRepository extends MongoRepository<Chat, String> {
@@ -25,7 +26,7 @@ public interface IChatRepository extends MongoRepository<Chat, String> {
             "{ '$sort' : { '_id' : -1 } }",
             "{ '$limit' : 1 }"
     })
-    Chat findOneByChatRoomId(String chatRoomId);
+    Optional<Chat> findOneByChatRoomId(String chatRoomId);
 
 //    Mono<Chat> findByChatRoomId(String chatRoomId);
 }

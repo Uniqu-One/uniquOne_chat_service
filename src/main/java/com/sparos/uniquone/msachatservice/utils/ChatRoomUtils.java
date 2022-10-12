@@ -30,8 +30,10 @@ public class ChatRoomUtils {
                 .cornImg(postResponseDto.getCornImg())
                 .postId(postResponseDto.getPostId())
                 .postImg(postResponseDto.getPostImg())
-                .message("최근 메시지")
-                .regDate("최근 메시지 시간")
+                .message(chat.getMessage())
+                .regDate(chat.getRegDate())
+//                .message("최근 메시지")
+//                .regDate(null)
                 .build();
     }
 
