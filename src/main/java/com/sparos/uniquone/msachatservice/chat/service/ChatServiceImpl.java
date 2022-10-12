@@ -99,7 +99,6 @@ public class ChatServiceImpl implements IChatService {
     @Override
     public Object createRoom(ChatRoomDto chatRoomDto) {
 
-
         Optional<ChatRoom> existChatRoom =
                 iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
                         (chatRoomDto.getPostId(), true, true,
@@ -116,10 +115,11 @@ public class ChatServiceImpl implements IChatService {
         // todo 타입이 SELLER 일 때 : POST가 actorId 소유가 맞는지
         //  타입이 BUYER 일 때 : POST가 receiverId 소유가 맞는지
 
-         /*   if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)){
-                iPostConnect.
+            if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)){
+                iPostConnect.getExistPost(chatRoomDto.getPostId(), chatRoomDto.getReceiverId());
+            } else if (chatRoomDto.getChatType().equals(ChatRoomType.SELLER)) {
+                iPostConnect.getExistPost(chatRoomDto.getPostId(), chatRoomDto.getActorId());
             }
-*/
 
             ChatRoom chatRoom = iChatRoomRepository.save(
                     ChatRoom.builder()

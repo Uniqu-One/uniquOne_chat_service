@@ -11,4 +11,7 @@ public interface IPostConnect {
     @GetMapping("/chat/postInfo/{postId}/{otherUserId}")
     PostResponseDto getPostInfo(@PathVariable("postId") Long postId, @PathVariable("otherUserId") Long otherUserId);
 
+    @GetMapping("/chat/existPost/{postId}/{userId}")
+    PostResponseDto getExistPost(@PathVariable("postId") Long postId, @PathVariable("userId") Long userId);
+
 }

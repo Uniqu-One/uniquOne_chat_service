@@ -21,7 +21,6 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
     }
 */
 
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/sub");
@@ -30,9 +29,8 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-stomp")
+        registry.addEndpoint("/chat/ws-stomp")
                 .setAllowedOriginPatterns("http://localhost:9000", "http://10.10.10.143:9000", "http://10.10.10.138:3000", "http://localhost:3000")
-//                .setAllowedOrigins("*")
                 .withSockJS();
     }
 }
