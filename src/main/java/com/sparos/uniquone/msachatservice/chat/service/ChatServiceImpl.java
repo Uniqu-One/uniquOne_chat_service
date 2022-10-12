@@ -21,14 +21,9 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -61,52 +56,85 @@ public class ChatServiceImpl implements IChatService {
 
     // 유저 채팅방 조회
     @Override
-    public List<ChatRoomOutDto> findAllUserRoom(Long userId) {
+    public Object findAllUserRoom(Long userId) {
 
-        List<ChatRoom> chatRoom = iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true);
+        List<ChatRoom> chatRooms = iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true);
+
+        if (chatRooms.isEmpty()){
+            return "채팅방이 존재하지 않습니다.";
+        }
+
         List<ChatRoomOutDto> chatRoomOutDtos = new ArrayList<>();
 
-        chatRoom.stream().map(chatRoom1-> {
-            if (chatRoom1.getReceiverId().equals(userId)) {
-                chatRoom1.setReceiverId(chatRoom1.getActorId());
-                chatRoom1.setReceiver(chatRoom1.getIsActor());
-                chatRoom1.setType(chatRoom1.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
+        chatRooms.forEach(chatRoom-> {
+
+            if (chatRoom.getReceiverId().equals(userId)) {
+                chatRoom.setReceiverId(chatRoom.getActorId());
+                chatRoom.setReceiver(chatRoom.getIsActor());
+                chatRoom.setType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
             }
-            return chatRoom1;
-        }).map(chatRoom2 -> {
-            Chat chat = iChatRepository.findOneByChatRoomId(chatRoom2.getId());
-            return  chatRoomOutDtos.add(ChatRoomUtils.entityToChatRoomOutDto(
-                    chat,
-                    chatRoom2,
-                    iUserConnect.getUserInfo(chatRoom2.getReceiverId()),
-                    iPostConnect.getPostInfo(chatRoom2.getPostId(), chatRoom2.getReceiverId()))
-            );
+
+            Optional<Chat> chat = iChatRepository.findOneByChatRoomId(chatRoom.getId());
+
+            if (chat.isPresent()) {
+                chatRoomOutDtos.add(ChatRoomUtils.entityToChatRoomOutDto(
+                        chat.get(),
+                        chatRoom,
+                        iUserConnect.getUserInfo(chatRoom.getReceiverId()),
+                        iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
+                );
+            }else { // todo 지울 코드
+                chatRoomOutDtos.add(ChatRoomUtils.entityToChatRoomOutDto(
+                        Chat.builder().message("최근메시지").regDate(null).build(),
+                        chatRoom,
+                        iUserConnect.getUserInfo(chatRoom.getReceiverId()),
+                        iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
+                );
+            }
 
         });
-
         return chatRoomOutDtos;
     }
 
     @Override
-    public ChatRoom findRoomById(String roomId) {
-        return iChatRoomRepository.findById(roomId).get();
-    }
+    public Object createRoom(ChatRoomDto chatRoomDto) {
 
-    @Override
-    public String createRoom(ChatRoomDto chatRoomDto) {
-        // todo 중복 확인
-        //  postId로 cornId 찾아서 receiverId 검색
-        ChatRoom chatRoom = iChatRoomRepository.save(
-                ChatRoom.builder()
-                        .chatType(chatRoomDto.getChatType())
-                        .actorId(chatRoomDto.getActorId())
-                        .receiverId(chatRoomDto.getReceiverId())
-                        .postId(chatRoomDto.getPostId())
-                        .isActor(true)
-                        .isReceiver(true)
-                        .regDate(chatRoomDto.getRegDate())
-                        .build());
-        return chatRoom.getId();
+
+        Optional<ChatRoom> existChatRoom =
+                iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
+                        (chatRoomDto.getPostId(), true, true,
+                                chatRoomDto.getActorId(), chatRoomDto.getReceiverId(),
+                                chatRoomDto.getReceiverId(), chatRoomDto.getActorId());
+
+        Map<String,String> chatRoomId = new HashMap<>();
+
+        if (existChatRoom.isPresent()){
+
+            chatRoomId.put("chatRoomId", existChatRoom.get().getId());
+
+        } else {
+        // todo 타입이 SELLER 일 때 : POST가 actorId 소유가 맞는지
+        //  타입이 BUYER 일 때 : POST가 receiverId 소유가 맞는지
+
+         /*   if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)){
+                iPostConnect.
+            }
+*/
+
+            ChatRoom chatRoom = iChatRoomRepository.save(
+                    ChatRoom.builder()
+                            .chatType(chatRoomDto.getChatType())
+                            .actorId(chatRoomDto.getActorId())
+                            .receiverId(chatRoomDto.getReceiverId())
+                            .postId(chatRoomDto.getPostId())
+                            .isActor(true)
+                            .isReceiver(true)
+                            .regDate(chatRoomDto.getRegDate())
+                            .build());
+            chatRoomId.put("chatRoomId", chatRoom.getId());
+
+        }
+        return chatRoomId;
     }
 
     @Override
@@ -153,6 +181,7 @@ public class ChatServiceImpl implements IChatService {
                                 .senderId(chatDto.getSenderId())
                                 .chatRoomId(chatDto.getChatRoomId())
                                 .message(chatDto.getMessage())
+                                .regDate(chatDto.getRegDate())
                                 .build());
     }
 
@@ -166,6 +195,10 @@ public class ChatServiceImpl implements IChatService {
         }
     }
 
+    @Override
+    public ChatRoom findRoomById(String roomId) {
+        return iChatRoomRepository.findById(roomId).get();
+    }
 
 /*
     public <T> void sendMessage(WebSocketSession session, T message) {
@@ -227,6 +260,6 @@ public class ChatServiceImpl implements IChatService {
 
 
     public Chat findOneByChatRoomId(String roomId) {
-        return iChatRepository.findOneByChatRoomId(roomId);
+        return iChatRepository.findOneByChatRoomId(roomId).get();
     }
 }

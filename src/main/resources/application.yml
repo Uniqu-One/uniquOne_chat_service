@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 0
 
 spring:
   profiles:
@@ -11,25 +11,27 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/msatest
-      host: localhost
-      port: 27017
-      database: msatest
+      uri: ${UNIQUONE_MONGODB}
 
   application:
     name: uniquone-chat-service
 
 eureka:
   instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:8080}
-    #    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     prefer-ip-address: true
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA-SERVER}
+      
 logging:
   level:
-    org.springframework.data.mongodb.repository.query: DEBUG
+    org:
+      springframework:
+        data:
+          mongodb:
+            repository:
+              query: DEBUG
 
