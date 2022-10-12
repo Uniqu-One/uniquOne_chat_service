@@ -17,11 +17,7 @@ public class RedisController {
     private final IChatService iChatService;
 
     @MessageMapping("/chat/message")
-    public void message(ChatDto chatDto) {
-        System.err.println("getChatRoomId()" + chatDto.getChatRoomId());
-        System.err.println("getMessage" + chatDto.getMessage());
-        System.err.println("getSenderId()" + chatDto.getSenderId());
-        System.err.println("getType()" + chatDto.getType());
+    public String message(ChatDto chatDto) {
         if (ChatDto.MessageType.ENTER.equals(chatDto.getType())) {
             iChatService.enterChatRoom(chatDto.getChatRoomId());
 //            chatDto.setMessage(chatDto.getSenderId() + "님이 입장하셨습니다.");
@@ -29,5 +25,6 @@ public class RedisController {
             redisPublisher.publish(iChatService.getTopic(chatDto.getChatRoomId()), iChatService.sendChat(chatDto));
         }
 
+        return "ok";
     }
 }

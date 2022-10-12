@@ -20,13 +20,13 @@ public interface IChatService {
     List<ChatRoom> findAllRoom();
 
     // 유저 채팅방 리스트
-    List<ChatRoomOutDto> findAllUserRoom(Long userId);
+    Object findAllUserRoom(Long userId);
 
     // 특정 채팅방 조회
     ChatRoom findRoomById(String roomId);
 
     // 채팅방 생성
-    String createRoom(ChatRoomDto chatRoomDto);
+    Object createRoom(ChatRoomDto chatRoomDto);
 
     // 채팅방 나가기
     String exitRoom(ChatRoomExitDto chatRoomPutDto);
