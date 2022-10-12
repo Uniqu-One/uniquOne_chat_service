@@ -22,8 +22,8 @@ spring:
 
 eureka:
   instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:8080}
-    #    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+#    instance-id: ${spring.application.name}:${spring.application.instance_id:8080}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     prefer-ip-address: true
   client:
     register-with-eureka: true
@@ -31,8 +31,6 @@ eureka:
     service-url:
 #      defaultZone: http://127.0.0.1:8761/eureka
       defaultZone: ${EUREKA_SERVER}
-#      defaultZone: http://172.17.0.2:8761/eureka
-#      defaultZone: http://eureka-server:8761/eureka
 
 logging:
   level:
