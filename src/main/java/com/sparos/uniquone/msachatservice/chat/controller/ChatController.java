@@ -2,20 +2,19 @@ package com.sparos.uniquone.msachatservice.chat.controller;
 
 import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
-import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.IChatService;
+import com.sparos.uniquone.msachatservice.utils.SuccessCode;
+import com.sparos.uniquone.msachatservice.utils.SuccessResponse;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,28 +29,39 @@ public class ChatController {
     // todo userId 토큰 대체
     // 유저 채팅방 목록
     @GetMapping("/{userId}")
-    public Object findAllUserRoom(@PathVariable Long userId) {
-        return iChatRoomService.findAllUserRoom(userId);
+    public ResponseEntity<SuccessResponse> findAllUserRoom(@PathVariable Long userId) {
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.findAllUserRoom(userId)));
     }
 
     // 채팅방 생성
     @PostMapping("/room")
-    public Object createRoom(@RequestBody ChatRoomDto chatRoomDto) {
-        return iChatRoomService.createRoom(chatRoomDto);
+    public ResponseEntity<SuccessResponse> createRoom(@RequestBody ChatRoomDto chatRoomDto) {
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.createRoom(chatRoomDto)));
     }
 
     // 채팅방 나가기
     @PutMapping("/room")
-    public String exitRoom(@RequestBody ChatRoomExitDto chatRoomExitDto) {
-        return iChatRoomService.exitRoom(chatRoomExitDto);
+    public ResponseEntity<SuccessResponse> exitRoom(@RequestBody ChatRoomExitDto chatRoomExitDto) {
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.exitRoom(chatRoomExitDto)));
+    }
+
+    // 채팅방 삭제
+    @DeleteMapping("/room/{roomId}")
+    public ResponseEntity<SuccessResponse> deleteRoom(@PathVariable String roomId) {
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.deleteRoom(roomId)));
     }
 
     // 채팅 내용 가져오기
     @GetMapping("/room/all/{roomId}/{userId}")
-    public Object findAllChat(@PathVariable String roomId, @PathVariable Long userId) {
-        return iChatRoomService.findAllChat(roomId, userId);
+    public ResponseEntity<SuccessResponse> findAllChat(@PathVariable String roomId, @PathVariable Long userId) {
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.findAllChat(roomId, userId)));
     }
 
+    // 토픽 조회
+    @GetMapping("/topic")
+    public ResponseEntity<SuccessResponse> getTopics() {
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.getTopics()));
+    }
 
     // test
     @GetMapping("/test")
@@ -69,11 +79,9 @@ public class ChatController {
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")
     public ChatRoom roomInfo(@PathVariable String roomId) {
+        System.err.println("조회");
         return iChatRoomService.findRoomById(roomId);
     }
-
-
-
 
     // dbTest
     @GetMapping("/dbTest/{roomId}")
@@ -82,15 +90,13 @@ public class ChatController {
         return iChatRepository.findOneByChatRoomId(roomId).get();
     }
 
-
     // dbTest
     @GetMapping("/dbTest2")
     public ChatRoom test2() {
         System.err.println("dbTest2");
 //        return iChatRoomRepository.findOneIdByPostId(1l);
         return iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
-                (2l,true, true, 1l, 3l, 3l, 1l).get();
-
+                (2l, true, true, 1l, 3l, 3l, 1l).get();
     }
 
 }

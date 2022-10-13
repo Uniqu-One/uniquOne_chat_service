@@ -14,6 +14,10 @@ public interface IChatRoomRepository extends MongoRepository<ChatRoom, String> {
 
     List<ChatRoom> findByActorIdAndIsActorOrReceiverIdAndIsReceiver(Long actorId, Boolean isActor, Long receiverId, Boolean isReceiver);
 
+    Optional<ChatRoom> findByIdAndActorIdOrIdAndReceiverId(String chatRoomId, Long actorId, String chatRoomId2, Long receiverId);
+
+    Boolean existsByActorIdOrReceiverId(Long actorId, Long receiverId);
+
     String findOneIdByPostId(Long postId);
 
     Optional<ChatRoom> findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
