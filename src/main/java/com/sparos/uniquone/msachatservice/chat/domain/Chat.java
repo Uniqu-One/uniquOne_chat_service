@@ -37,4 +37,6 @@ public class Chat implements Serializable {
     @Field(name = "reg_date")
     private LocalDateTime regDate;
 
+
+
 }

@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IChatService {
 
@@ -31,13 +32,21 @@ public interface IChatService {
     // 채팅방 나가기
     String exitRoom(ChatRoomExitDto chatRoomPutDto);
 
-    // 채팅방 입장
-    void enterChatRoom(String roomId);
+    // 채팅방 삭제
+    String deleteRoom(String roomId);
 
+    // 채팅 내용 조회
     Object findAllChat(String roomId, Long userId);
 
+    // 채팅 전송
     Chat sendChat(ChatDto chatDto);
+
+    // 채팅방 입장
+    Object enterChatRoom(ChatDto chatDto);
 
     // 토픽 조회
     ChannelTopic getTopic(String roomId);
+
+    // 토픽 전체 조회
+    Set<String> getTopics();
 }

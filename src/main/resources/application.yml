@@ -12,10 +12,6 @@ spring:
   data:
     mongodb:
       uri: ${UNIQUONE_MONGODB}
-#      uri: mongodb://localhost:27017/uniquone_mongodb
-#      host: localhost
-#      port: 27017
-#      database: msatest
 
   application:
     name: uniquone-chat-service
@@ -29,7 +25,6 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-#      defaultZone: http://127.0.0.1:8761/eureka
       defaultZone: ${EUREKA_SERVER}
 
 logging:

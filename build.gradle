@@ -64,8 +64,12 @@ dependencies {
 	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// Jackson
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// Json
+	implementation 'org.json:json:20190722'
 
 	// Spring Web
 //	implementation 'org.springframework.boot:spring-boot-starter-web'
