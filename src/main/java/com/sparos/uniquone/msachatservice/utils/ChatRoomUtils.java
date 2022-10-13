@@ -12,14 +12,21 @@ import com.sparos.uniquone.msachatservice.outband.user.dto.UserResponseDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatRoomUtils {
+    public static final int SEC = 60;
+    public static final int MIN = 60;
+    public static final int HOUR = 24;
+    public static final int DAY = 30;
+    public static final int MONTH = 12;
 
     public static ChatRoomOutDto entityToChatRoomOutDto(Chat chat, ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto) {
-        // todo
-        //  최근 chat 처리
+
         return ChatRoomOutDto.builder()
 //                .chatRoomId(chatRoom.getChatRoomId())
                 .chatRoomId(chatRoom.getId())
@@ -31,7 +38,7 @@ public class ChatRoomUtils {
                 .postId(postResponseDto.getPostId())
                 .postImg(postResponseDto.getPostImg())
                 .message(chat.getMessage())
-                .regDate(chat.getRegDate())
+                .msgRegDate(converter(chat.getRegDate()))
 //                .message("최근 메시지")
 //                .regDate(null)
                 .build();
@@ -116,25 +123,36 @@ public class ChatRoomUtils {
                 .build();
     }
 
-  /*  public static ChatRoomOutDto entityToChatRoomOutDto(ChatRoom chatRoom) {
-        return ChatRoomDto.builder()
-                .id(chatRoom.getId())
-                .userId(chatRoom.getActorId())
-                .receiverId(chatRoom.getOtherUserId())
-                .name(chatRoom.getName())
-                .type(chatRoom.getType())
-                .build();
-    }
-    */
+    public static String converter(LocalDateTime msgRegDate) {
 
-    /*public static ChatRoomDto entityToChatRoomDto(ChatRoom chatRoom) {
-        return ChatRoomDto.builder()
-                .roomId(chatRoom.getId())
-                .userId(chatRoom.getUserId())
-                .otherUserId(chatRoom.getOtherUserId())
-                .name(chatRoom.getName())
-                .type(chatRoom.getType())
-                .build();
-    }*/
+//        LocalDateTime startDateTime = LocalDateTime.of(2022, 11, 14, 14, 59, 30);
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(msgRegDate, now);
+        Long diffTime = msgRegDate.until(now, ChronoUnit.SECONDS);
+
+        String msg = null;
+
+        if (diffTime < SEC) {
+            // sec
+            msg = diffTime + "초 전";
+        } else if ((diffTime /= SEC) < MIN) {
+            // min
+            msg = diffTime + "분 전";
+        } else if ((diffTime /= MIN) < HOUR) {
+            // hour
+            msg = (diffTime) + "시간 전";
+        } else if ((diffTime /= HOUR) < DAY) {
+            // day
+            msg = (diffTime) + "일 전";
+        } else if ((diffTime /= DAY) < MONTH) {
+            // day
+            msg = (diffTime) + "달 전";
+        } else {
+            msg = (diffTime) + "년 전";
+        }
+        return msg;
+
+    }
+
 
 }

@@ -28,6 +28,6 @@ public class ChatRoomOutDto {
     private String postType;
 
     private String message;
-    private LocalDateTime regDate;
+    private String msgRegDate;
 
 }

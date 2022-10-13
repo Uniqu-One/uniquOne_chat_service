@@ -16,11 +16,8 @@ import java.util.Optional;
 @Repository
 public interface IChatRepository extends MongoRepository<Chat, String> {
 
-
-
     List<Chat> findByChatRoomId(String chatRoomId);
 
-//    @Query("{'chatRoomId' : ?0}" )
     @Aggregation(pipeline = {
             "{ '$match': { 'chatRoomId' : ?0 } }",
             "{ '$sort' : { '_id' : -1 } }",
@@ -28,21 +25,4 @@ public interface IChatRepository extends MongoRepository<Chat, String> {
     })
     Optional<Chat> findOneByChatRoomId(String chatRoomId);
 
-//    Mono<Chat> findByChatRoomId(String chatRoomId);
 }
-
-/*
-SELECT * FROM student ORDER BY ROWID DESC LIMIT 1;
-select
-        *
-        from(
-        select
-        *
-        from tb_test
-        where (code, date_time) in (
-        select code, max(date_time) as date_time
-        from tb_test group by code
-        )
-        order by date_time desc
-        ) t
-        group by t.code*/
