@@ -38,7 +38,6 @@ public class ChatRoom implements Serializable {
 
     private Boolean isReceiver; // 받는 유저 참여 여부
 
-    //    @Enumerated(EnumType.STRING)
     private ChatRoomType chatType; // 채팅 타입 (SELLER, BUYER, NORMAL)
 
     @CreatedDate

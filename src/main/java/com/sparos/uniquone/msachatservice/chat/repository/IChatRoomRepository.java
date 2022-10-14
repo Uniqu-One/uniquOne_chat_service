@@ -23,5 +23,4 @@ public interface IChatRoomRepository extends MongoRepository<ChatRoom, String> {
     Optional<ChatRoom> findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
             (Long postId, Boolean isActor, Boolean isReceiver, Long actorId, Long receiverId, Long actorId2, Long receiverId2);
 
-//    ActorIdAndIsActorOrReceiverIdAndIsReceiver(Long actorId, Boolean isActor, Long receiverId, Boolean isReceiver);
 }

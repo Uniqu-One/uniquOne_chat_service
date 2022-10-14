@@ -4,21 +4,24 @@ import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.IChatService;
 import com.sparos.uniquone.msachatservice.utils.SuccessCode;
 import com.sparos.uniquone.msachatservice.utils.SuccessResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/chat")
 public class ChatController {
 
@@ -30,7 +33,8 @@ public class ChatController {
     // 유저 채팅방 목록
     @GetMapping("/{userId}")
     public ResponseEntity<SuccessResponse> findAllUserRoom(@PathVariable Long userId) {
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.findAllUserRoom(userId)));
+        JSONObject jsonObject = iChatRoomService.findAllUserRoom(userId);
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, (String) jsonObject.get("result"), jsonObject.get("data")));
     }
 
     // 채팅방 생성
@@ -46,8 +50,9 @@ public class ChatController {
     }
 
     // 채팅방 삭제
-    @DeleteMapping("/room/{roomId}")
+    @PostMapping("/room/{roomId}")
     public ResponseEntity<SuccessResponse> deleteRoom(@PathVariable String roomId) {
+        log.info("roomId => {}", roomId);
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.deleteRoom(roomId)));
     }
 
@@ -94,7 +99,6 @@ public class ChatController {
     @GetMapping("/dbTest2")
     public ChatRoom test2() {
         System.err.println("dbTest2");
-//        return iChatRoomRepository.findOneIdByPostId(1l);
         return iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
                 (2l, true, true, 1l, 3l, 3l, 1l).get();
     }

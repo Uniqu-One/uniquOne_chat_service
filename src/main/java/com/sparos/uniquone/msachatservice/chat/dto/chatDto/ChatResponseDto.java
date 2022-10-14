@@ -15,6 +15,7 @@ public class ChatResponseDto {
 
     private Long senderId;
     private String message;
-    private LocalDateTime regDate;
+    private String date;
+    private String regTime;
 
 }
