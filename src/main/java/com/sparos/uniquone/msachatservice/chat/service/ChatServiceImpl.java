@@ -16,6 +16,8 @@ import com.sparos.uniquone.msachatservice.outband.user.service.IUserConnect;
 import com.sparos.uniquone.msachatservice.utils.ChatRoomUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Log4j2
@@ -56,44 +59,50 @@ public class ChatServiceImpl implements IChatService {
 
     // 유저 채팅방 조회
     @Override
-    public Object findAllUserRoom(Long userId) {
+    public JSONObject findAllUserRoom(Long userId) {
 
         List<ChatRoom> chatRooms = iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true);
+        JSONObject jsonObject = new JSONObject();
 
         if (chatRooms.isEmpty()){
-            return "채팅방이 존재하지 않습니다.";
+//            return "채팅방이 존재하지 않습니다.";
+            jsonObject.put("result", "채팅방이 존재하지 않습니다.");
+            jsonObject.put("data", 0);
+        }else {
+
+            List<ChatRoomOutDto> chatRoomOutDtos = new ArrayList<>();
+
+            chatRooms.forEach(chatRoom-> {
+
+                if (chatRoom.getReceiverId().equals(userId)) {
+                    chatRoom.setReceiverId(chatRoom.getActorId());
+                    chatRoom.setReceiver(chatRoom.getIsActor());
+                    chatRoom.setType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
+                }
+
+                Optional<Chat> chat = iChatRepository.findOneByChatRoomId(chatRoom.getId());
+
+                if (chat.isPresent()) {
+                    chatRoomOutDtos.add(ChatRoomUtils.entityToChatRoomOutDto(
+                            chat.get(),
+                            chatRoom,
+                            iUserConnect.getUserInfo(chatRoom.getReceiverId()),
+                            iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
+                    );
+                }else { // todo 지울 코드
+                    chatRoomOutDtos.add(ChatRoomUtils.entityToChatRoomOutDto(
+                            Chat.builder().message("최근메시지").regDate(LocalDateTime.now()).build(),
+                            chatRoom,
+                            iUserConnect.getUserInfo(chatRoom.getReceiverId()),
+                            iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
+                    );
+                }
+            });
+            jsonObject.put("result", "채팅방 조회를 완료했습니다.");
+            jsonObject.put("data", chatRoomOutDtos.toArray());
+//            return chatRoomOutDtos;
         }
-
-        List<ChatRoomOutDto> chatRoomOutDtos = new ArrayList<>();
-
-        chatRooms.forEach(chatRoom-> {
-
-            if (chatRoom.getReceiverId().equals(userId)) {
-                chatRoom.setReceiverId(chatRoom.getActorId());
-                chatRoom.setReceiver(chatRoom.getIsActor());
-                chatRoom.setType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
-            }
-
-            Optional<Chat> chat = iChatRepository.findOneByChatRoomId(chatRoom.getId());
-
-            if (chat.isPresent()) {
-                chatRoomOutDtos.add(ChatRoomUtils.entityToChatRoomOutDto(
-                        chat.get(),
-                        chatRoom,
-                        iUserConnect.getUserInfo(chatRoom.getReceiverId()),
-                        iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
-                );
-            }else { // todo 지울 코드
-                chatRoomOutDtos.add(ChatRoomUtils.entityToChatRoomOutDto(
-                        Chat.builder().message("최근메시지").regDate(null).build(),
-                        chatRoom,
-                        iUserConnect.getUserInfo(chatRoom.getReceiverId()),
-                        iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
-                );
-            }
-
-        });
-        return chatRoomOutDtos;
+        return jsonObject;
     }
 
     // 채팅방 생성
@@ -174,7 +183,7 @@ public class ChatServiceImpl implements IChatService {
     @Override
     public Object findAllChat(String roomId, Long userId) {
 
-        Optional<ChatRoom> chatRoomOptional = iChatRoomRepository.findById(roomId);
+        Optional<ChatRoom> chatRoomOptional = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(roomId, userId, roomId, userId);
 
         if (chatRoomOptional.isPresent()){
 
@@ -197,17 +206,15 @@ public class ChatServiceImpl implements IChatService {
                     chats);
         }
 
-        return "채팅방이 존재하지 않습니다.";
+        return "채팅방이 존재하지 않거나 참여자가 아닙니다.";
     }
 
     // 채팅 전송
     @Override
     public Chat sendChat(ChatDto chatDto) {
-        // todo return
-        System.err.println("chatDto.getSenderId()=>" + chatDto.getSenderId());
+        // todo exception return
         ChatRoom chatRoom = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(chatDto.getChatRoomId(), chatDto.getSenderId(), chatDto.getChatRoomId(), chatDto.getSenderId())
                 .orElseThrow();
-        System.err.println("chatRoom" + chatRoom.getId());
 
         return iChatRepository.save(
                 Chat.builder()
@@ -226,7 +233,7 @@ public class ChatServiceImpl implements IChatService {
 
             String chatRoomId = chatDto.getChatRoomId();
             ChannelTopic topic = topics.get(chatRoomId);
-            System.err.println("topic  => " + topic);
+
             if (topic == null) {
                 topic = new ChannelTopic(chatRoomId);
                 redisMessageListener.addMessageListener(redisSubscriber, topic);

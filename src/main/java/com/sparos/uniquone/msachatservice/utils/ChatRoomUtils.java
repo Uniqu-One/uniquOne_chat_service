@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,6 @@ public class ChatRoomUtils {
     public static ChatRoomOutDto entityToChatRoomOutDto(Chat chat, ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto) {
 
         return ChatRoomOutDto.builder()
-//                .chatRoomId(chatRoom.getChatRoomId())
                 .chatRoomId(chatRoom.getId())
                 .chatType(chatRoom.getChatType())
                 .receiverId(userResponseDto.getUserId())
@@ -47,7 +47,7 @@ public class ChatRoomUtils {
     public static ChatOutDto entityToChatOutDto(ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto, List<Chat> chats) {
 
         List<ChatResponseDto> chatResponseDtos = new ArrayList<>();
-        for (Chat chat : chats){
+        for (Chat chat : chats) {
             chatResponseDtos.add(ChatRoomUtils.entityToChatResponseDto(chat));
         }
 
@@ -90,10 +90,16 @@ public class ChatRoomUtils {
     }
 
     public static ChatResponseDto entityToChatResponseDto(Chat chat) {
+
+        String date = chat.getRegDate().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일"));
+        String time = chat.getRegDate().format(DateTimeFormatter.ofPattern("a hh:mm"));
+
+
         return ChatResponseDto.builder()
                 .senderId(chat.getSenderId())
                 .message(chat.getMessage())
-                .regDate(chat.getRegDate())
+                .date(date)
+                .regTime(time)
                 .build();
     }
 
@@ -126,8 +132,8 @@ public class ChatRoomUtils {
     public static String converter(LocalDateTime msgRegDate) {
 
 //        LocalDateTime startDateTime = LocalDateTime.of(2022, 11, 14, 14, 59, 30);
+
         LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(msgRegDate, now);
         Long diffTime = msgRegDate.until(now, ChronoUnit.SECONDS);
 
         String msg = null;

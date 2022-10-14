@@ -1,12 +1,14 @@
 package com.sparos.uniquone.msachatservice.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+@Slf4j
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSocketMessageBroker
@@ -30,7 +32,7 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat/ws-stomp")
-                .setAllowedOriginPatterns("http://localhost:9000", "http://10.10.10.143:9000", "http://10.10.10.138:3000", "http://localhost:3000")
-                .withSockJS();
+                .setAllowedOriginPatterns("http://localhost:9000", "http://10.10.10.143:9000", "http://localhost:3000")
+                .withSockJS().setSupressCors(true);
     }
 }
