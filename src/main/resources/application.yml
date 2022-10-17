@@ -1,12 +1,12 @@
 server:
-  port: 8080
+  port: 0
 
 spring:
   profiles:
     active: local
 
   redis:
-    host: 127.0.0.1
+    host: ${UNIQUONE_REDIS}
     port: 6379
 
   data:
@@ -18,7 +18,6 @@ spring:
 
 eureka:
   instance:
-#    instance-id: ${spring.application.name}:${spring.application.instance_id:8080}
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     prefer-ip-address: true
   client:
