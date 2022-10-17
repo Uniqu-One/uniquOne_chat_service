@@ -15,11 +15,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Builder
 @ToString
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Document(collection = "chatRoom")
 public class ChatRoom implements Serializable {
 
@@ -46,6 +44,17 @@ public class ChatRoom implements Serializable {
     @Field(name = "reg_date")
     private LocalDateTime regDate;
 
+    @Builder
+    public ChatRoom(String id, Long actorId, Long receiverId, Long postId, Boolean isActor, Boolean isReceiver, ChatRoomType chatType, LocalDateTime regDate) {
+        this.id = id;
+        this.actorId = actorId;
+        this.receiverId = receiverId;
+        this.postId = postId;
+        this.isActor = isActor;
+        this.isReceiver = isReceiver;
+        this.chatType = chatType;
+        this.regDate = regDate;
+    }
 
     public void setReceiverId(Long receiverId) {
         this.receiverId = receiverId;
