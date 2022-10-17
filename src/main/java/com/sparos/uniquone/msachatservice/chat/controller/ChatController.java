@@ -4,7 +4,6 @@ import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.IChatService;
@@ -12,7 +11,6 @@ import com.sparos.uniquone.msachatservice.utils.SuccessCode;
 import com.sparos.uniquone.msachatservice.utils.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +54,7 @@ public class ChatController {
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.deleteRoom(roomId)));
     }
 
+    // todo 판매자인지 구매자인지 리턴 해 줘야함
     // 채팅 내용 가져오기
     @GetMapping("/room/all/{roomId}/{userId}")
     public ResponseEntity<SuccessResponse> findAllChat(@PathVariable String roomId, @PathVariable Long userId) {

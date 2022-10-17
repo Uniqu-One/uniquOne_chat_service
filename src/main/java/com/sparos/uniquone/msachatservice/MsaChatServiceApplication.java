@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @EnableFeignClients
 @EnableMongoRepositories
-//@EnableMongoAuditing
 @EnableDiscoveryClient
 @SpringBootApplication
 public class MsaChatServiceApplication {
