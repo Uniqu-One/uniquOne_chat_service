@@ -18,7 +18,6 @@ public class ChatDto {
     }
     private MessageType type; // 메시지 타입
 
-    private Long senderId;
     private String chatRoomId;
     private String message;
     private LocalDateTime regDate;

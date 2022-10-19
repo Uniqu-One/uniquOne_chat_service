@@ -1,4 +1,4 @@
-package com.sparos.uniquone.msachatservice.utils;
+package com.sparos.uniquone.msachatservice.utils.response;
 
 import lombok.Getter;
 

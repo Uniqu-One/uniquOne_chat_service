@@ -1,12 +1,10 @@
 package com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto;
 
-import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
+import com.sparos.uniquone.msachatservice.utils.enums.ChatRoomType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Builder
 @Getter

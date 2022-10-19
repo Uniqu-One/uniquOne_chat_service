@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatRoomExitDto {
 
-    private Long userId;
     private String chatRoomId;
 
 
