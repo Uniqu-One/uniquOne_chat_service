@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
@@ -22,28 +23,28 @@ public interface IChatService {
     List<ChatRoom> findAllRoom();
 
     // 유저 채팅방 리스트
-    JSONObject findAllUserRoom(Long userId);
+    JSONObject findAllUserRoom(HttpServletRequest request);
 
     // 특정 채팅방 조회
     ChatRoom findRoomById(String roomId);
 
     // 채팅방 생성
-    Object createRoom(ChatRoomDto chatRoomDto);
+    JSONObject createRoom(ChatRoomDto chatRoomDto, HttpServletRequest request);
 
     // 채팅방 나가기
-    String exitRoom(ChatRoomExitDto chatRoomPutDto);
+    JSONObject exitRoom(ChatRoomExitDto chatRoomPutDto, HttpServletRequest request);
 
     // 채팅방 삭제
-    String deleteRoom(String roomId);
+    JSONObject deleteRoom(String roomId);
 
     // 채팅 내용 조회
-    Object findAllChat(String roomId, Long userId);
+    JSONObject findAllChat(String roomId, HttpServletRequest request);
 
     // 채팅 전송
-    Chat sendChat(ChatDto chatDto);
+    Chat sendChat(ChatDto chatDto, String token);
 
     // 채팅방 입장
-    Object enterChatRoom(ChatDto chatDto);
+    void enterChatRoom(ChatDto chatDto, String token);
 
     // 토픽 조회
     ChannelTopic getTopic(String roomId);

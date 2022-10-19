@@ -1,5 +1,7 @@
 package com.sparos.uniquone.msachatservice.chat.dto.chatDto;
 
+import com.sparos.uniquone.msachatservice.utils.enums.ChatRoomType;
+import com.sparos.uniquone.msachatservice.utils.enums.PostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,11 +17,12 @@ import java.util.List;
 public class ChatOutDto {
 
     private String chatRoomId;
+    private ChatRoomType chatRoomType;
 
     private Long postId;
     private String postDsc;
     private Long postPrice;
-    private String postType; // todo enum으로 변경
+    private PostType postType;
     private Boolean isOffer;
 
     private Long receiverId;
