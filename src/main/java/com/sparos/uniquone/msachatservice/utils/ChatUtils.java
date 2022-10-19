@@ -1,119 +1,106 @@
 package com.sparos.uniquone.msachatservice.utils;
 
+import com.sparos.uniquone.msachatservice.chat.domain.Chat;
+import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
+import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatOutDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatResponseDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatTestDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
+import com.sparos.uniquone.msachatservice.outband.post.dto.PostResponseDto;
+import com.sparos.uniquone.msachatservice.outband.user.dto.UserResponseDto;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChatUtils {
-    /*public static ChatRoomDto entityToDto(ChatRoom chatRoom) {
-        return ChatRoomDto.builder()
-                .ch(chatRoom.getId())
-                .userId(chatRoom.getUserId())
-                .otherUserId(chatRoom.getOtherUserId())
-                .name(chatRoom.getName())
-                .type(chatRoom.getType())
+    public static final int SEC = 60;
+    public static final int MIN = 60;
+    public static final int HOUR = 24;
+    public static final int DAY = 30;
+    public static final int MONTH = 12;
+
+    public static ChatRoomOutDto entityToChatRoomOutDto(Chat chat, ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto) {
+
+        return ChatRoomOutDto.builder()
+                .chatRoomId(chatRoom.getId())
+                .chatType(chatRoom.getChatType())
+                .receiverId(userResponseDto.getUserId())
+                .receiverName(userResponseDto.getNickname())
+                .isReceiver(chatRoom.getIsReceiver())
+                .cornImg(postResponseDto.getCornImg())
+                .postId(postResponseDto.getPostId())
+                .postImg(postResponseDto.getPostImg())
+                .message(chat.getMessage())
+                .msgRegDate(converter(chat.getRegDate()))
                 .build();
-    }*/
+    }
 
+    public static ChatOutDto entityToChatOutDto(ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto, List<Chat> chats) {
 
-    /*public static ChatRoomDto entityToChatRoomDto(ChatRoom chatRoom, Long userId) {
-        ChatRoomType chatRoomType = chatRoom.getType();
-        Long otherUserId = chatRoom.getOtherUserId();
-
-        if (chatRoom.getOtherUserId().equals(userId) && chatRoom.getType().equals(ChatRoomType.SELLER)){
-            chatRoomType = ChatRoomType.BUYER;
-            otherUserId = chatRoom.getUserId();
-        }else if(chatRoom.getOtherUserId().equals(userId) && chatRoom.getType().equals(ChatRoomType.BUYER)){
-            chatRoomType = ChatRoomType.SELLER;
-            otherUserId = chatRoom.getUserId();
+        List<ChatResponseDto> chatResponseDtos = new ArrayList<>();
+        for (Chat chat : chats) {
+            chatResponseDtos.add(ChatUtils.entityToChatResponseDto(chat));
         }
 
-        return ChatRoomDto.builder()
-                .roomId(chatRoom.getId())
-                .otherUserId(otherUserId)
-                .name(chatRoom.getName())
-                .type(chatRoomType)
+        return ChatOutDto.builder()
+                .chatRoomId(chatRoom.getId())
+                .chatRoomType(chatRoom.getChatType())
+                .postId(postResponseDto.getPostId())
+                .postDsc(postResponseDto.getPostDsc())
+                .postPrice(postResponseDto.getPostPrice())
+                .postType(postResponseDto.getPostType())
+                .isOffer(postResponseDto.getIsOffer())
+                .receiverId(userResponseDto.getUserId())
+                .receiverName(userResponseDto.getNickname())
+                .receiverImg(postResponseDto.getCornImg())
+                .chatResponseDtos(chatResponseDtos)
                 .build();
     }
 
+    public static ChatResponseDto entityToChatResponseDto(Chat chat) {
 
-    public static ChatOutputDto entityToChatOutputDto(Chat chat) {
-        return ChatOutputDto.builder()
-                .sender(chat.getSender())
-                .message(chat.getMsg())
+        String date = chat.getRegDate().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일"));
+        String time = chat.getRegDate().format(DateTimeFormatter.ofPattern("a hh:mm"));
+
+
+        return ChatResponseDto.builder()
+                .senderId(chat.getSenderId())
+                .message(chat.getMessage())
+                .date(date)
+                .regTime(time)
                 .build();
     }
 
-    public static ChatRoom dtoToEntity(ChatRoomDto chatRoomDto) {
-        return ChatRoom.builder()
-                .name(chatRoomDto.getName())
-                .otherUserId(chatRoomDto.getOtherUserId())
-                .build();
-    }*/
+    public static String converter(LocalDateTime msgRegDate) {
 
-    /*public static ChatRoomDto test(ChatRoomDto chatRoom, UserDto otherUserDto, Long userId) {
-        ChatRoomType chatRoomType = chatRoom.getType();
-        Long otherUserId = chatRoom.getOtherUserId();
-        System.err.println("내 id : " + userId);
-        System.err.println("너 닉네임 : " + otherUserDto.getName());
-        if (chatRoom.getOtherUserId().equals(userId) && chatRoom.getType().equals(ChatRoomType.SELLER)){
-            chatRoomType = ChatRoomType.BUYER;
-            otherUserId = otherUserDto.getUserId();
-        }else if(chatRoom.getOtherUserId().equals(userId) && chatRoom.getType().equals(ChatRoomType.BUYER)){
-            chatRoomType = ChatRoomType.SELLER;
-            otherUserId = otherUserDto.getUserId();
+        LocalDateTime now = LocalDateTime.now();
+        Long diffTime = msgRegDate.until(now, ChronoUnit.SECONDS);
+
+        String msg = null;
+
+        if (diffTime < SEC) {
+            // sec
+            msg = diffTime + "초 전";
+        } else if ((diffTime /= SEC) < MIN) {
+            // min
+            msg = diffTime + "분 전";
+        } else if ((diffTime /= MIN) < HOUR) {
+            // hour
+            msg = (diffTime) + "시간 전";
+        } else if ((diffTime /= HOUR) < DAY) {
+            // day
+            msg = (diffTime) + "일 전";
+        } else if ((diffTime /= DAY) < MONTH) {
+            // day
+            msg = (diffTime) + "달 전";
+        } else {
+            msg = (diffTime) + "년 전";
         }
+        return msg;
 
-        return ChatRoomDto.builder()
-                .roomId(chatRoom.getRoomId())
-                .name(chatRoom.getName())
-                .otherUserId(otherUserDto.getUserId())
-                .otherUserName(otherUserDto.getName())
-                .type(chatRoom.getType())
-                .build();
     }
 
-    public static ChatRoomDto dtoToDto(UserDto userDto, UserDto otherUserDto, ChatRoomDto chatRoomDto, Long userId) {
-
-        ChatRoomType chatRoomType = chatRoomDto.getType();
-        Long otherUserId = otherUserDto.getUserId();
-        String otherUserName = otherUserDto.getName();
-
-        if (chatRoomDto.getOtherUserId().equals(userId) && chatRoomType.equals(ChatRoomType.SELLER)){
-            chatRoomType = ChatRoomType.BUYER;
-            otherUserId = userDto.getUserId();
-            otherUserName = userDto.getName();
-        }else if(chatRoomDto.getOtherUserId().equals(userId) && chatRoomType.equals(ChatRoomType.BUYER)){
-            chatRoomType = ChatRoomType.SELLER;
-            otherUserId = userDto.getUserId();
-            otherUserName = userDto.getName();
-        }
-
-        return ChatRoomDto.builder()
-                .roomId(chatRoomDto.getRoomId())
-                .name(chatRoomDto.getName())
-                .otherUserId(otherUserId)
-                .otherUserName(otherUserName)
-                .type(chatRoomType)
-                .build();
-    }
-
-    public static ChatRoomDto dtoToDto2(UserDto otherUserDto, ChatRoomDto chatRoomDto) {
-        System.err.println("djldjld : " + chatRoomDto.getName());
-        return ChatRoomDto.builder()
-                .roomId(chatRoomDto.getRoomId())
-                .name(chatRoomDto.getName())
-                .otherUserId(otherUserDto.getUserId())
-                .otherUserName(otherUserDto.getName())
-                .type(chatRoomDto.getType())
-                .build();
-    }
-
-
-
-
-    public static ChatRoom roomInputDtoToEntity(ChatRoomInputDto chatRoomInputDto) {
-        return ChatRoom.builder()
-                .name(chatRoomInputDto.getName())
-                .userId(chatRoomInputDto.getUserId())
-                .otherUserId(chatRoomInputDto.getOtherUserId())
-                .type(chatRoomInputDto.getType())
-                .build();
-    }*/
 }

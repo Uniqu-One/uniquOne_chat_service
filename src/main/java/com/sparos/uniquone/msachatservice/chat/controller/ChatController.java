@@ -7,14 +7,15 @@ import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.IChatService;
-import com.sparos.uniquone.msachatservice.utils.SuccessCode;
-import com.sparos.uniquone.msachatservice.utils.SuccessResponse;
+import com.sparos.uniquone.msachatservice.utils.response.SuccessCode;
+import com.sparos.uniquone.msachatservice.utils.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j
@@ -27,38 +28,39 @@ public class ChatController {
     private final IChatRepository iChatRepository;
     private final IChatRoomRepository iChatRoomRepository;
 
-    // todo userId 토큰 대체
     // 유저 채팅방 목록
-    @GetMapping("/{userId}")
-    public ResponseEntity<SuccessResponse> findAllUserRoom(@PathVariable Long userId) {
-        JSONObject jsonObject = iChatRoomService.findAllUserRoom(userId);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, (String) jsonObject.get("result"), jsonObject.get("data")));
+    @GetMapping("")
+    public ResponseEntity<SuccessResponse> findAllUserRoom(HttpServletRequest request) {
+        JSONObject jsonObject = iChatRoomService.findAllUserRoom(request);
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
     }
 
     // 채팅방 생성
     @PostMapping("/room")
-    public ResponseEntity<SuccessResponse> createRoom(@RequestBody ChatRoomDto chatRoomDto) {
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.createRoom(chatRoomDto)));
+    public ResponseEntity<SuccessResponse> createRoom(@RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
+        JSONObject jsonObject = iChatRoomService.createRoom(chatRoomDto, request);
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
     }
 
     // 채팅방 나가기
     @PutMapping("/room")
-    public ResponseEntity<SuccessResponse> exitRoom(@RequestBody ChatRoomExitDto chatRoomExitDto) {
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.exitRoom(chatRoomExitDto)));
+    public ResponseEntity<SuccessResponse> exitRoom(@RequestBody ChatRoomExitDto chatRoomExitDto, HttpServletRequest request) {
+        JSONObject jsonObject = iChatRoomService.exitRoom(chatRoomExitDto, request);
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
     }
 
     // 채팅방 삭제
     @PostMapping("/room/{roomId}")
     public ResponseEntity<SuccessResponse> deleteRoom(@PathVariable String roomId) {
-        log.info("roomId => {}", roomId);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.deleteRoom(roomId)));
+        JSONObject jsonObject = iChatRoomService.deleteRoom(roomId);
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
     }
 
-    // todo 판매자인지 구매자인지 리턴 해 줘야함
     // 채팅 내용 가져오기
-    @GetMapping("/room/all/{roomId}/{userId}")
-    public ResponseEntity<SuccessResponse> findAllChat(@PathVariable String roomId, @PathVariable Long userId) {
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.findAllChat(roomId, userId)));
+    @GetMapping("/room/all/{roomId}")
+    public ResponseEntity<SuccessResponse> findAllChat(@PathVariable String roomId, HttpServletRequest request) {
+        JSONObject jsonObject = iChatRoomService.findAllChat(roomId, request);
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
     }
 
     // 토픽 조회

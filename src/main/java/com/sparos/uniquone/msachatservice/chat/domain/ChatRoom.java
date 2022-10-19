@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.sparos.uniquone.msachatservice.chat.enums.ChatRoomType;
+import com.sparos.uniquone.msachatservice.utils.enums.ChatRoomType;
 import lombok.*;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -60,7 +59,7 @@ public class ChatRoom implements Serializable {
         this.receiverId = receiverId;
     }
 
-    public void setType(ChatRoomType chatType) {
+    public void setChatType(ChatRoomType chatType) {
         this.chatType = chatType;
     }
 
