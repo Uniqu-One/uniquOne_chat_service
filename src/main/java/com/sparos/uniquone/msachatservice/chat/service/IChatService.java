@@ -3,15 +3,9 @@ package com.sparos.uniquone.msachatservice.chat.service;
 import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
 import org.json.JSONObject;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.web.bind.annotation.PathVariable;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -32,7 +26,7 @@ public interface IChatService {
     JSONObject createRoom(ChatRoomDto chatRoomDto, HttpServletRequest request);
 
     // 채팅방 나가기
-    JSONObject exitRoom(ChatRoomExitDto chatRoomPutDto, HttpServletRequest request);
+    JSONObject exitRoom(String chatRoomId, HttpServletRequest request);
 
     // 채팅방 삭제
     JSONObject deleteRoom(String roomId);

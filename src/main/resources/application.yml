@@ -1,18 +1,13 @@
 server:
-  port: 0
+  port: 7080
 
 spring:
-  profiles:
-    active: local
-
   redis:
     host: ${UNIQUONE_REDIS}
-    port: 6379
-
+    port: ${UNIQUONE_REDIS_PORT}
   data:
     mongodb:
       uri: ${UNIQUONE_MONGODB}
-
   application:
     name: uniquone-chat-service
 
@@ -34,12 +29,3 @@ logging:
           mongodb:
             repository:
               query: DEBUG
-
-token:
-  expiration_time: 864000000
-  secret: user_token_uniqu_native_ecommerce
-  name: Authorization
-
-refreshToken:
-  expiration_time: 2592000000
-  name: refreshToken
