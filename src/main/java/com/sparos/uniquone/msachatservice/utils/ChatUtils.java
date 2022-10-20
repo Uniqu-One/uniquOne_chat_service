@@ -65,7 +65,6 @@ public class ChatUtils {
         String date = chat.getRegDate().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일"));
         String time = chat.getRegDate().format(DateTimeFormatter.ofPattern("a hh:mm"));
 
-
         return ChatResponseDto.builder()
                 .senderId(chat.getSenderId())
                 .message(chat.getMessage())

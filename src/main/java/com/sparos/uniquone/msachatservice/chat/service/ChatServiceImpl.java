@@ -4,7 +4,6 @@ import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.utils.enums.ChatRoomType;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
@@ -92,7 +91,6 @@ public class ChatServiceImpl implements IChatService {
     }
 
     // 채팅방 생성
-    // todo return
     @Override
     public JSONObject createRoom(ChatRoomDto chatRoomDto, HttpServletRequest request) {
 
@@ -104,12 +102,11 @@ public class ChatServiceImpl implements IChatService {
                                 userId, chatRoomDto.getReceiverId(),
                                 chatRoomDto.getReceiverId(), userId);
 
-        Map<String, String> chatRoomId = new HashMap<>();
         Boolean existPost = false;
 
         if (existChatRoom.isPresent()) {
 
-            chatRoomId.put("chatRoomId", existChatRoom.get().getId());
+            jsonObject.put("data", existChatRoom.get());
 
         } else {
 
@@ -135,19 +132,19 @@ public class ChatServiceImpl implements IChatService {
                             .isReceiver(true)
                             .regDate(chatRoomDto.getRegDate())
                             .build());
-            chatRoomId.put("chatRoomId", chatRoom.getId());
+            jsonObject.put("data", chatRoom);
         }
-        jsonObject.put("data", chatRoomId);
+
         return jsonObject;
     }
 
     // 채팅방 나가기
     @Override
-    public JSONObject exitRoom(ChatRoomExitDto chatRoomExitDto, HttpServletRequest request) {
+    public JSONObject exitRoom(String chatRoomId, HttpServletRequest request) {
 
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
-        ChatRoom chatRoom = iChatRoomRepository.findById(chatRoomExitDto.getChatRoomId())
+        ChatRoom chatRoom = iChatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION));
 
         if (chatRoom.getReceiverId().equals(userId)) {
@@ -155,11 +152,10 @@ public class ChatServiceImpl implements IChatService {
         } else {
             chatRoom.setActor(false);
         }
-        iChatRoomRepository.save(chatRoom);
+        chatRoom = iChatRoomRepository.save(chatRoom);
 
-        jsonObject.put("data", "채팅방에서 나갔습니다.");
+        jsonObject.put("data", chatRoom);
         return jsonObject;
-
     }
 
     // 채팅방 삭제
