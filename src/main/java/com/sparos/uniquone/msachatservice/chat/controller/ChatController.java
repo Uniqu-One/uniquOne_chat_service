@@ -3,7 +3,6 @@ package com.sparos.uniquone.msachatservice.chat.controller;
 import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomExitDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.IChatService;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,9 +43,9 @@ public class ChatController {
     }
 
     // 채팅방 나가기
-    @PutMapping("/room")
-    public ResponseEntity<SuccessResponse> exitRoom(@RequestBody ChatRoomExitDto chatRoomExitDto, HttpServletRequest request) {
-        JSONObject jsonObject = iChatRoomService.exitRoom(chatRoomExitDto, request);
+    @PatchMapping("/room")
+    public ResponseEntity<SuccessResponse> exitRoom(@RequestBody Map<String,String> chatRoomId, HttpServletRequest request) {
+        JSONObject jsonObject = iChatRoomService.exitRoom(chatRoomId.get("chatRoomId"), request);
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
     }
 
