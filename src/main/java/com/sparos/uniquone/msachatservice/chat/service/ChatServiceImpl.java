@@ -84,7 +84,6 @@ public class ChatServiceImpl implements IChatService {
                     iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
             );
         });
-
         jsonObject.put("data", chatRoomOutDtos.toArray());
 
         return jsonObject;
