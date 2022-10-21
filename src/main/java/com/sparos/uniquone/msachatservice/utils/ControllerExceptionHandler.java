@@ -15,6 +15,6 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UniquOneServiceException.class)
     public ResponseEntity<?> applicationHandler(UniquOneServiceException e){
         log.error("Error : {}", e.toString());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.of(e.getExceptionCode()));
+        return ResponseEntity.status(e.getStatus()).body(ExceptionResponse.of(e.getExceptionCode()));
     }
 }

@@ -76,7 +76,10 @@ public class ChatUtils {
     public static String converter(LocalDateTime msgRegDate) {
 
         LocalDateTime now = LocalDateTime.now();
-        Long diffTime = msgRegDate.until(now, ChronoUnit.SECONDS);
+        Long diffTime = 0l;
+
+        if (msgRegDate != null)
+            diffTime = msgRegDate.until(now, ChronoUnit.SECONDS);
 
         String msg = null;
 
