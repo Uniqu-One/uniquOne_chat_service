@@ -65,7 +65,7 @@ public class ChatServiceImpl implements IChatService {
         List<ChatRoom> chatRooms = iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true);
 
         if (chatRooms.isEmpty()) {
-            throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT);
+            throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
         }
 
         chatRooms.forEach(chatRoom -> {
@@ -129,7 +129,7 @@ public class ChatServiceImpl implements IChatService {
             }
 
             if (!existPost.equals(true)) {
-                throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT);
+                throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
             }
             ChatRoom chatRoom = iChatRoomRepository.save(
                     ChatRoom.builder()
@@ -154,7 +154,7 @@ public class ChatServiceImpl implements IChatService {
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
         ChatRoom chatRoom = iChatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT));
+                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
 
         if (chatRoom.getReceiverId().equals(userId)) {
             chatRoom.setReceiver(false);
@@ -173,7 +173,7 @@ public class ChatServiceImpl implements IChatService {
 
         JSONObject jsonObject = new JSONObject();
         ChatRoom chatRoom = iChatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT));
+                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
 
         iChatRoomRepository.delete(chatRoom);
 
@@ -188,13 +188,13 @@ public class ChatServiceImpl implements IChatService {
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
         ChatRoom chatRoomOptional = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(roomId, userId, roomId, userId)
-                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT));
+                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
 
         List<Chat> chats = iChatRepository.findByChatRoomId(roomId);
         ChatRoom chatRoom = chatRoomOptional;
 
         if (chats.isEmpty()) {
-            throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT);
+            throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
         }
         if (chatRoom.getReceiverId().equals(userId)) {
             chatRoom.setReceiverId(chatRoom.getActorId());
@@ -216,7 +216,7 @@ public class ChatServiceImpl implements IChatService {
     public Chat sendChat(ChatDto chatDto, String token) {
         Long userId = JwtProvider.getUserPkId(token);
         ChatRoom chatRoom = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(chatDto.getChatRoomId(), userId, chatDto.getChatRoomId(), userId)
-                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT));
+                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
 
         return iChatRepository.save(
                 Chat.builder()
@@ -234,7 +234,7 @@ public class ChatServiceImpl implements IChatService {
         Long userId = JwtProvider.getUserPkId(token);
 
         if (!iChatRoomRepository.existsByActorIdOrReceiverId(userId, userId)) {
-            throw new UniquOneServiceException(ExceptionCode.DON_T_HAVE_ACCESS, HttpStatus.NO_CONTENT);
+            throw new UniquOneServiceException(ExceptionCode.DON_T_HAVE_ACCESS, HttpStatus.ACCEPTED);
         }
 
         String chatRoomId = chatDto.getChatRoomId();
