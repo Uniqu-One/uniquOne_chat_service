@@ -96,12 +96,4 @@ public class ChatController {
         return iChatRepository.findOneByChatRoomId(roomId).get();
     }
 
-    // dbTest
-    @GetMapping("/dbTest2")
-    public ChatRoom test2() {
-        System.err.println("dbTest2");
-        return iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
-                (2l, true, true, 1l, 3l, 3l, 1l).get();
-    }
-
 }

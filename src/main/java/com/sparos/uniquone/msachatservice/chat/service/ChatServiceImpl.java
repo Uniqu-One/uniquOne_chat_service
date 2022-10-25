@@ -106,10 +106,9 @@ public class ChatServiceImpl implements IChatService {
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
         Optional<ChatRoom> existChatRoom =
-                iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrActorIdAndReceiverId
-                        (chatRoomDto.getPostId(), true, true,
-                                userId, chatRoomDto.getReceiverId(),
-                                chatRoomDto.getReceiverId(), userId);
+                iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
+                        (chatRoomDto.getPostId(), true, true, userId, chatRoomDto.getReceiverId(),
+                                chatRoomDto.getPostId(), true, true, chatRoomDto.getReceiverId(), userId);
 
         Boolean existPost = false;
 
