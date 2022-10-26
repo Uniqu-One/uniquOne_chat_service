@@ -12,6 +12,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -31,6 +33,9 @@ public class RedisSubscriber implements MessageListener {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             // ChatMessage 객채로 맵핑
             ChatDto roomMessage = objectMapper.readValue(publishMessage, ChatDto.class);
+            roomMessage.setDate(roomMessage.getRegDate().format(DateTimeFormatter.ofPattern("yy년 MM월 dd일")));
+            roomMessage.setRegTime(roomMessage.getRegDate().format(DateTimeFormatter.ofPattern("a hh:mm")));
+
             // Websocket 구독자에게 채팅 메시지 Send
             messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getChatRoomId(), roomMessage);
         } catch (Exception e) {
