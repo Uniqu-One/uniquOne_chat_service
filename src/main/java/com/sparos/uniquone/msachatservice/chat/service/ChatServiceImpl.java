@@ -12,6 +12,7 @@ import com.sparos.uniquone.msachatservice.chat.service.redis.RedisSubscriber;
 import com.sparos.uniquone.msachatservice.outband.post.service.IPostConnect;
 import com.sparos.uniquone.msachatservice.outband.user.service.IUserConnect;
 import com.sparos.uniquone.msachatservice.utils.ChatUtils;
+import com.sparos.uniquone.msachatservice.utils.enums.ChatType;
 import com.sparos.uniquone.msachatservice.utils.jwt.JwtProvider;
 import com.sparos.uniquone.msachatservice.utils.response.ExceptionCode;
 import com.sparos.uniquone.msachatservice.utils.response.UniquOneServiceException;
@@ -223,6 +224,7 @@ public class ChatServiceImpl implements IChatService {
                         .chatRoomId(chatRoom.getId())
                         .message(chatDto.getMessage())
                         .regDate(chatDto.getRegDate())
+                        .type(chatDto.getType())
                         .build());
     }
 
@@ -259,5 +261,65 @@ public class ChatServiceImpl implements IChatService {
     @Override
     public Set<String> getTopics() {
         return topics.keySet();
+    }
+
+    // offer 수락 일 때 채팅방 생성 -> chatRoomId 리턴
+    @Override
+    public void offerChat(ChatRoomDto chatRoomDto, String token) {
+
+        Long userId = JwtProvider.getUserPkId(token);
+        Optional<ChatRoom> existChatRoom =
+                iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
+                        (chatRoomDto.getPostId(), true, true, userId, chatRoomDto.getReceiverId(),
+                                chatRoomDto.getPostId(), true, true, chatRoomDto.getReceiverId(), userId);
+
+        Boolean existPost = false;
+        ChatRoom chatRoom = null;
+
+        if (existChatRoom.isPresent()) {
+            chatRoom = existChatRoom.get();
+        } else {
+
+            if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)) {
+                existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), chatRoomDto.getReceiverId());
+            } else if (chatRoomDto.getChatType().equals(ChatRoomType.SELLER)) {
+                existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), userId);
+            }
+
+            if (!existPost.equals(true))
+                throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
+
+            chatRoom = iChatRoomRepository.save(
+                    ChatRoom.builder()
+                            .chatType(chatRoomDto.getChatType())
+                            .actorId(userId)
+                            .receiverId(chatRoomDto.getReceiverId())
+                            .postId(chatRoomDto.getPostId())
+                            .isActor(true)
+                            .isReceiver(true)
+                            .regDate(chatRoomDto.getRegDate())
+                            .build());
+        }
+
+        iChatRepository.save(
+                Chat.builder()
+                        .senderId(userId)
+                        .chatRoomId(chatRoom.getId())
+                        .message("오퍼가 수락되었습니다. 오퍼가격 : N원")
+                        .type(ChatType.NOTICE)
+                        .build());
+
+    }
+
+    @Override
+    public String offerChat(Long postId, Long userId, Long receiverId) {
+
+        // todo 채팅방 나가기 했을 경우 처리하기
+        ChatRoom chatRoom = iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId(
+                        postId, true, true, userId, receiverId,
+                        postId, true, true, receiverId, userId)
+                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
+
+        return chatRoom.getId();
     }
 }
