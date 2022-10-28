@@ -4,6 +4,10 @@ import com.sparos.uniquone.msachatservice.outband.post.dto.PostResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 @FeignClient(name = "uniquone-post-service")
 public interface IPostConnect {

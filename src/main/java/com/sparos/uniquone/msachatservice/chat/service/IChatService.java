@@ -6,6 +6,7 @@ import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import org.json.JSONObject;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -45,4 +46,10 @@ public interface IChatService {
 
     // 토픽 전체 조회
     Set<String> getTopics();
+
+    // offer 수락 일 때 채팅방 생성 -> chatRoomId 리턴
+    void offerChat(ChatRoomDto chatRoomDto, String token);
+
+    //
+    String offerChat(Long postId, Long userId, Long receiverId);
 }

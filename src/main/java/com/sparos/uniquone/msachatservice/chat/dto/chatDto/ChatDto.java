@@ -1,5 +1,6 @@
 package com.sparos.uniquone.msachatservice.chat.dto.chatDto;
 
+import com.sparos.uniquone.msachatservice.utils.enums.ChatType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,11 +14,8 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatDto {
-    // 메시지 타입 : 입장, 채팅
-    public enum MessageType {
-        ENTER, TALK
-    }
-    private MessageType type; // 메시지 타입
+
+    private ChatType type; // 메시지 타입
 
     private Long senderId;
     private String chatRoomId;
@@ -30,6 +28,9 @@ public class ChatDto {
         this.message = message;
     }
 
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
 
     public void setDate(String date) {
         this.date = date;

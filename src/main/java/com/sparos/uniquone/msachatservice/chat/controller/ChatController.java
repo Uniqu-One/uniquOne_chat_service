@@ -69,6 +69,18 @@ public class ChatController {
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, iChatRoomService.getTopics()));
     }
 
+    // offer 수락 일 때 채팅방 생성 -> chatRoomId 리턴
+    @PostMapping("/offer")
+    void offerChat(@RequestBody ChatRoomDto chatRoomDto, @RequestHeader("token") String token){
+        iChatRoomService.offerChat(chatRoomDto, token);
+    }
+
+    // offer 수락 일 때 채팅방 생성 -> chatRoomId 리턴
+    @GetMapping("/offer/roomId")
+    String offerChat(@RequestParam("postId") Long postId, @RequestParam("userId") Long userId, @RequestParam("receiverId") Long receiverId){
+        return iChatRoomService.offerChat(postId, userId, receiverId);
+    }
+
     // test
     @GetMapping("/test")
     public String test() {

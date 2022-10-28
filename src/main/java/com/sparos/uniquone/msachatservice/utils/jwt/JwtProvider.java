@@ -67,7 +67,6 @@ public class JwtProvider {
 
     public static Long getUserPkId(HttpServletRequest request){
         String token = getTokenFromRequestHeader(request);
-        System.err.println("totototoken : " + token);
         return getUserPkId(token);
     }
 
