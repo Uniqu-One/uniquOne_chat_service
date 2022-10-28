@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.sparos.uniquone.msachatservice.utils.enums.ChatRoomType;
+import com.sparos.uniquone.msachatservice.utils.enums.ChatType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -29,6 +31,8 @@ public class Chat implements Serializable {
 
     private String message;
 
+    private ChatType type;
+
     @CreatedDate
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -36,11 +40,12 @@ public class Chat implements Serializable {
     private LocalDateTime regDate;
 
     @Builder
-    public Chat(String id, Long senderId, String chatRoomId, String message, LocalDateTime regDate) {
-        this.id = id;
+    public Chat(Long senderId, String chatRoomId, String message, ChatType type, LocalDateTime regDate) {
         this.senderId = senderId;
         this.chatRoomId = chatRoomId;
         this.message = message;
+        this.type = type;
         this.regDate = regDate;
     }
+
 }
