@@ -32,7 +32,7 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat/ws-stomp")
-                .setAllowedOriginPatterns("http://13.125.66.71:8000","http://localhost:3000", "http://10.10.10.143","http://13.125.66.71:80","http://uniquone.shop")
+                .setAllowedOriginPatterns("http://13.125.66.71:8000","http://localhost:3000", "http://10.10.10.143","http://13.125.66.71:80","http://www.uniquone.shop","http://uniquone.shop")
                 .withSockJS().setSupressCors(true);
     }
 }
