@@ -5,6 +5,7 @@ import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
+import com.sparos.uniquone.msachatservice.outband.post.dto.ChatPushDto;
 import com.sparos.uniquone.msachatservice.utils.enums.ChatRoomType;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
@@ -218,7 +219,7 @@ public class ChatServiceImpl implements IChatService {
         ChatRoom chatRoom = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(chatDto.getChatRoomId(), userId, chatDto.getChatRoomId(), userId)
                 .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
 
-        return iChatRepository.save(
+        Chat chat = iChatRepository.save(
                 Chat.builder()
                         .senderId(userId)
                         .chatRoomId(chatRoom.getId())
@@ -226,6 +227,15 @@ public class ChatServiceImpl implements IChatService {
                         .regDate(chatDto.getRegDate())
                         .type(chatDto.getType())
                         .build());
+
+        iPostConnect.chatPush(
+                ChatPushDto.builder()
+                        .receiverId(chatRoom.getReceiverId())
+                        .postId(chatRoom.getPostId())
+                        .chat(chat)
+                .build());
+
+        return chat;
     }
 
     // 채팅방 입장
