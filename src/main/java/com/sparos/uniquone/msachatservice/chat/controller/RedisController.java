@@ -26,8 +26,6 @@ public class RedisController {
     @MessageMapping("/chat/message")
     public void message(ChatDto chatDto, @Headers Map<String, Object> headers) {
 
-        System.err.println("타입");
-        System.err.println(chatDto.getType());
         LinkedMultiValueMap<String, List<String>> s = (LinkedMultiValueMap<String, List<String>>) headers.get("nativeHeaders");
         String token = String.valueOf(s.get("Authorization").get(0));
 
