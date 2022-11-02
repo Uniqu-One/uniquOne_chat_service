@@ -4,7 +4,6 @@ import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatOutDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatResponseDto;
-import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatTestDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.outband.post.dto.PostResponseDto;
 import com.sparos.uniquone.msachatservice.outband.user.dto.UserResponseDto;

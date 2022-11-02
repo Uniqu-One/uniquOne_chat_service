@@ -97,14 +97,12 @@ public class ChatController {
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")
     public ChatRoom roomInfo(@PathVariable String roomId) {
-        System.err.println("조회");
         return iChatRoomService.findRoomById(roomId);
     }
 
     // dbTest
     @GetMapping("/dbTest/{roomId}")
     public Chat test(@PathVariable String roomId) {
-        System.err.println("dbTest");
         return iChatRepository.findOneByChatRoomId(roomId).get();
     }
 
