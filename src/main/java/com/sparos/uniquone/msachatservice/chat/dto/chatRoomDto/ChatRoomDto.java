@@ -14,9 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ChatRoomDto {
 
-    // 나중에 없애기
-    private Long receiverId;
-
     private Long postId;
 
     private ChatRoomType chatType;
