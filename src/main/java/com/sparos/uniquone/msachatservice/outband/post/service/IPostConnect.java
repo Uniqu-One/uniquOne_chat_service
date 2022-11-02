@@ -17,6 +17,9 @@ public interface IPostConnect {
     @GetMapping("/chat/existPost/{postId}/{userId}")
     Boolean getExistPost(@PathVariable("postId") Long postId, @PathVariable("userId") Long userId);
 
+    @GetMapping("/chat/{postId}")
+    Long getUserIdByCorn(@PathVariable("postId") Long postId);
+
     @PostMapping("/chat/sendPush")
     void chatPush(@RequestBody ChatPushDto chatPushDto);
 
