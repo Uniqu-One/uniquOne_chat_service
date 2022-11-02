@@ -268,10 +268,11 @@ public class ChatServiceImpl implements IChatService {
     public void offerChat(ChatRoomDto chatRoomDto, String token) {
 
         Long userId = JwtProvider.getUserPkId(token);
+        Long receiverId = iPostConnect.getUserIdByCorn(chatRoomDto.getPostId());
         Optional<ChatRoom> existChatRoom =
                 iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
-                        (chatRoomDto.getPostId(), true, true, userId, chatRoomDto.getReceiverId(),
-                                chatRoomDto.getPostId(), true, true, chatRoomDto.getReceiverId(), userId);
+                        (chatRoomDto.getPostId(), true, true, userId, receiverId,
+                                chatRoomDto.getPostId(), true, true, receiverId, userId);
 
         Boolean existPost = false;
         ChatRoom chatRoom = null;
@@ -281,7 +282,7 @@ public class ChatServiceImpl implements IChatService {
         } else {
 
             if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)) {
-                existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), chatRoomDto.getReceiverId());
+                existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), receiverId);
             } else if (chatRoomDto.getChatType().equals(ChatRoomType.SELLER)) {
                 existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), userId);
             }
@@ -293,7 +294,7 @@ public class ChatServiceImpl implements IChatService {
                     ChatRoom.builder()
                             .chatType(chatRoomDto.getChatType())
                             .actorId(userId)
-                            .receiverId(chatRoomDto.getReceiverId())
+                            .receiverId(receiverId)
                             .postId(chatRoomDto.getPostId())
                             .isActor(true)
                             .isReceiver(true)
