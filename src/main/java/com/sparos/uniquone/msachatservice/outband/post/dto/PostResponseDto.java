@@ -10,11 +10,12 @@ import lombok.*;
 public class PostResponseDto {
 
     private Long postId;
+    private String postTitle;
+    private String postImg;
     private String postDsc;
     private Long postPrice;
     private PostType postType;
     private Boolean isOffer;
-    private String postImg;
     private String cornImg;
 
 }
