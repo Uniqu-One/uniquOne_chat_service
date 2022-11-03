@@ -44,7 +44,7 @@ public class ChatRoom implements Serializable {
     private LocalDateTime regDate;
 
     @Builder
-    public ChatRoom(String id, Long actorId, Long receiverId, Long postId, Boolean isActor, Boolean isReceiver, ChatRoomType chatType, LocalDateTime regDate) {
+    public ChatRoom(String id, Long actorId, Long receiverId, Long postId, Boolean isActor, Boolean isReceiver, ChatRoomType chatType) {
         this.id = id;
         this.actorId = actorId;
         this.receiverId = receiverId;
@@ -52,7 +52,6 @@ public class ChatRoom implements Serializable {
         this.isActor = isActor;
         this.isReceiver = isReceiver;
         this.chatType = chatType;
-        this.regDate = regDate;
     }
 
     public void setReceiverId(Long receiverId) {
@@ -70,4 +69,5 @@ public class ChatRoom implements Serializable {
     public void setReceiver(Boolean receiver) {
         isReceiver = receiver;
     }
+
 }
