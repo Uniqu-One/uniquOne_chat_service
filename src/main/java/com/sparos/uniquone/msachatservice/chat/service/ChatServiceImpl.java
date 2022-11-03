@@ -350,6 +350,7 @@ public class ChatServiceImpl implements IChatService {
                                 .isActor(true)
                                 .isReceiver(true)
                                 .build());
+                chatRoomId = chatRoomCreated.getId();
             }
 
        }
