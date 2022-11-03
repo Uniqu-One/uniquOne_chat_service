@@ -20,7 +20,9 @@ public class ChatOutDto {
     private ChatRoomType chatRoomType;
 
     private Long postId;
+    private String postTitle;
     private String postDsc;
+    private String postImg;
     private Long postPrice;
     private PostType postType;
     private Boolean isOffer;

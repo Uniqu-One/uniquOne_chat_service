@@ -99,40 +99,45 @@ public class ChatServiceImpl implements IChatService {
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
         Long receiverId = iPostConnect.getUserIdByCorn(chatRoomDto.getPostId());
-        Optional<ChatRoom> existChatRoom =
-                iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
-                        (chatRoomDto.getPostId(), true, true, userId, receiverId,
-                                chatRoomDto.getPostId(), true, true, receiverId, userId);
 
-        Boolean existPost = false;
+        if (!userId.equals(receiverId)){
+            Optional<ChatRoom> existChatRoom =
+                    iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
+                            (chatRoomDto.getPostId(), true, true, userId, receiverId,
+                                    chatRoomDto.getPostId(), true, true, receiverId, userId);
 
-        if (existChatRoom.isPresent()) {
+            Boolean existPost = false;
 
-            jsonObject.put("data", existChatRoom.get());
+            if (existChatRoom.isPresent()) {
 
+                jsonObject.put("data", existChatRoom.get());
+
+            } else {
+
+                if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)) {
+                    existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), receiverId);
+
+                } else if (chatRoomDto.getChatType().equals(ChatRoomType.SELLER)) {
+                    existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), userId);
+                }
+
+                if (!existPost.equals(true)) {
+                    throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
+                }
+                ChatRoom chatRoom = iChatRoomRepository.save(
+                        ChatRoom.builder()
+                                .chatType(chatRoomDto.getChatType())
+                                .actorId(userId)
+                                .receiverId(receiverId)
+                                .postId(chatRoomDto.getPostId())
+                                .isActor(true)
+                                .isReceiver(true)
+                                .regDate(chatRoomDto.getRegDate())
+                                .build());
+                jsonObject.put("data", chatRoom);
+            }
         } else {
-
-            if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)) {
-                existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), receiverId);
-
-            } else if (chatRoomDto.getChatType().equals(ChatRoomType.SELLER)) {
-                existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), userId);
-            }
-
-            if (!existPost.equals(true)) {
-                throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
-            }
-            ChatRoom chatRoom = iChatRoomRepository.save(
-                    ChatRoom.builder()
-                            .chatType(chatRoomDto.getChatType())
-                            .actorId(userId)
-                            .receiverId(receiverId)
-                            .postId(chatRoomDto.getPostId())
-                            .isActor(true)
-                            .isReceiver(true)
-                            .regDate(chatRoomDto.getRegDate())
-                            .build());
-            jsonObject.put("data", chatRoom);
+            jsonObject.put("data", "");
         }
 
         return jsonObject;

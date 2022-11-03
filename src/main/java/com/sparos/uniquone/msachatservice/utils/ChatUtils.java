@@ -48,6 +48,8 @@ public class ChatUtils {
                 .chatRoomId(chatRoom.getId())
                 .chatRoomType(chatRoom.getChatType())
                 .postId(postResponseDto.getPostId())
+                .postTitle(postResponseDto.getPostTitle())
+                .postImg(postResponseDto.getPostImg())
                 .postDsc(postResponseDto.getPostDsc())
                 .postPrice(postResponseDto.getPostPrice())
                 .postType(postResponseDto.getPostType())
