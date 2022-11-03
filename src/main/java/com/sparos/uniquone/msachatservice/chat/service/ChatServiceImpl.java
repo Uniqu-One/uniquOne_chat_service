@@ -132,7 +132,7 @@ public class ChatServiceImpl implements IChatService {
                                 .postId(chatRoomDto.getPostId())
                                 .isActor(true)
                                 .isReceiver(true)
-                                .regDate(chatRoomDto.getRegDate())
+//                                .regDate(chatRoomDto.getRegDate())
                                 .build());
                 jsonObject.put("data", chatRoom);
             }
@@ -303,7 +303,7 @@ public class ChatServiceImpl implements IChatService {
                             .postId(chatRoomDto.getPostId())
                             .isActor(true)
                             .isReceiver(true)
-                            .regDate(chatRoomDto.getRegDate())
+//                            .regDate(chatRoomDto.getRegDate())
                             .build());
         }
 
@@ -320,12 +320,40 @@ public class ChatServiceImpl implements IChatService {
     @Override
     public String offerChat(Long postId, Long userId, Long receiverId) {
 
-        // todo 채팅방 나가기 했을 경우 처리하기
-        ChatRoom chatRoom = iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId(
+        String chatRoomId = null;
+        Optional<ChatRoom> chatRoom = iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId(
                         postId, true, true, userId, receiverId,
-                        postId, true, true, receiverId, userId)
-                .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
+                        postId, true, true, receiverId, userId);
 
-        return chatRoom.getId();
+        // todo 채팅방 나가기 했을 경우 처리하기
+        if (chatRoom.isPresent()){
+            chatRoomId = chatRoom.get().getId();
+        } else {
+
+            chatRoom = iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId(
+                    postId, false, true, userId, receiverId,
+                    postId, true, false, receiverId, userId);
+
+            if (chatRoom.isPresent()){
+                // 나만 나갔을 경우 다시 트루
+                chatRoom.get().setActor(true);
+                chatRoom.get().setReceiver(true);
+                chatRoomId = chatRoom.get().getId();
+            }else {
+                // 둘 다 나갔을 경우, 상대가 나갔을 경우 새로운 채팅방 생성성
+                ChatRoom chatRoomCreated = iChatRoomRepository.save(
+                        ChatRoom.builder()
+                                .chatType(ChatRoomType.SELLER)
+                                .actorId(userId)
+                                .receiverId(receiverId)
+                                .postId(postId)
+                                .isActor(true)
+                                .isReceiver(true)
+                                .build());
+            }
+
+       }
+
+        return chatRoomId;
     }
 }
