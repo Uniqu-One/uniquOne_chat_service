@@ -87,7 +87,7 @@ public class ChatServiceImpl implements IChatService {
            return chatRoomOutDto;
         }).collect(Collectors.toList());
 
-        jsonObject.put("data", chatRoomOutDtos);
+        jsonObject.put("data", chatRoomOutDtos.toArray());
 
         return jsonObject;
     }
