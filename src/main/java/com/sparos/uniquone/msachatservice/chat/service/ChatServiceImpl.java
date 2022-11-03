@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -63,31 +64,30 @@ public class ChatServiceImpl implements IChatService {
 
         Long userId = JwtProvider.getUserPkId(request);
         JSONObject jsonObject = new JSONObject();
-        List<ChatRoomOutDto> chatRoomOutDtos = new ArrayList<>();
+
         List<ChatRoom> chatRooms = iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true);
 
         if (chatRooms.isEmpty()) {
             throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
         }
 
-        chatRooms.forEach(chatRoom -> {
+        List<ChatRoomOutDto> chatRoomOutDtos = chatRooms.stream().map(chatRoom -> {
             if (chatRoom.getReceiverId().equals(userId)) {
                 chatRoom.setReceiverId(chatRoom.getActorId());
                 chatRoom.setReceiver(chatRoom.getIsActor());
                 chatRoom.setChatType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
             }
-
             Chat chat = iChatRepository.findOneByChatRoomId(chatRoom.getId())
-                    .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.NO_CONTENT));
-
-            chatRoomOutDtos.add(ChatUtils.entityToChatRoomOutDto(
+                    .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
+            ChatRoomOutDto chatRoomOutDto = ChatUtils.entityToChatRoomOutDto(
                     chat,
                     chatRoom,
                     iUserConnect.getUserInfo(chatRoom.getReceiverId()),
-                    iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()))
-            );
-        });
-        jsonObject.put("data", chatRoomOutDtos.toArray());
+                    iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()));
+           return chatRoomOutDto;
+        }).collect(Collectors.toList());
+
+        jsonObject.put("data", chatRoomOutDtos);
 
         return jsonObject;
     }
