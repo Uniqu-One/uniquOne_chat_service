@@ -26,7 +26,6 @@ public class ChatController {
 
     private final IChatService iChatRoomService;
     private final IChatRepository iChatRepository;
-    private final IChatRoomRepository iChatRoomRepository;
 
     // 유저 채팅방 목록
     @GetMapping("")

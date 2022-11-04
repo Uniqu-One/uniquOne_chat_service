@@ -180,7 +180,7 @@ public class ChatServiceImpl implements IChatService {
     // 채팅 내용 조회
     @Override
     public JSONObject findAllChat(String roomId, HttpServletRequest request) {
-
+        System.err.println(roomId);
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
         ChatRoom chatRoomOptional = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(roomId, userId, roomId, userId)
@@ -190,7 +190,7 @@ public class ChatServiceImpl implements IChatService {
         ChatRoom chatRoom = chatRoomOptional;
 
         if (chats.isEmpty()) {
-            throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
+            chats = null;
         }
         if (chatRoom.getReceiverId().equals(userId)) {
             chatRoom.setReceiverId(chatRoom.getActorId());

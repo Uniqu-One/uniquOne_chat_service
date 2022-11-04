@@ -40,8 +40,13 @@ public class ChatUtils {
     public static ChatOutDto entityToChatOutDto(ChatRoom chatRoom, UserResponseDto userResponseDto, PostResponseDto postResponseDto, List<Chat> chats) {
 
         List<ChatResponseDto> chatResponseDtos = new ArrayList<>();
-        for (Chat chat : chats) {
-            chatResponseDtos.add(ChatUtils.entityToChatResponseDto(chat));
+
+        if (chats != null){
+            for (Chat chat : chats) {
+                chatResponseDtos.add(ChatUtils.entityToChatResponseDto(chat));
+            }
+        } else {
+            chatResponseDtos = null;
         }
 
         return ChatOutDto.builder()
