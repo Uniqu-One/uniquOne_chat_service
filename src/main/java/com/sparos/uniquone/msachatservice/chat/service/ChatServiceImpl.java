@@ -84,7 +84,7 @@ public class ChatServiceImpl implements IChatService {
                     chatRoom,
                     iUserConnect.getUserInfo(chatRoom.getReceiverId()),
                     iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()));
-           return chatRoomOutDto;
+            return chatRoomOutDto;
         }).collect(Collectors.toList());
 
         jsonObject.put("data", chatRoomOutDtos.toArray());
@@ -100,7 +100,7 @@ public class ChatServiceImpl implements IChatService {
         Long userId = JwtProvider.getUserPkId(request);
         Long receiverId = iPostConnect.getUserIdByCorn(chatRoomDto.getPostId());
 
-        if (!userId.equals(receiverId)){
+        if (!userId.equals(receiverId)) {
             Optional<ChatRoom> existChatRoom =
                     iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
                             (chatRoomDto.getPostId(), true, true, userId, receiverId,
@@ -228,7 +228,7 @@ public class ChatServiceImpl implements IChatService {
                         .receiverId(chatRoom.getReceiverId())
                         .postId(chatRoom.getPostId())
                         .chat(chat)
-                .build());
+                        .build());
 
         return chat;
     }
@@ -322,11 +322,11 @@ public class ChatServiceImpl implements IChatService {
 
         String chatRoomId = null;
         Optional<ChatRoom> chatRoom = iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId(
-                        postId, true, true, userId, receiverId,
-                        postId, true, true, receiverId, userId);
+                postId, true, true, userId, receiverId,
+                postId, true, true, receiverId, userId);
 
         // todo 채팅방 나가기 했을 경우 처리하기
-        if (chatRoom.isPresent()){
+        if (chatRoom.isPresent()) {
             chatRoomId = chatRoom.get().getId();
         } else {
 
@@ -334,12 +334,12 @@ public class ChatServiceImpl implements IChatService {
                     postId, false, true, userId, receiverId,
                     postId, true, false, receiverId, userId);
 
-            if (chatRoom.isPresent()){
+            if (chatRoom.isPresent()) {
                 // 나만 나갔을 경우 다시 트루
                 chatRoom.get().setActor(true);
                 chatRoom.get().setReceiver(true);
                 chatRoomId = chatRoom.get().getId();
-            }else {
+            } else {
                 // 둘 다 나갔을 경우, 상대가 나갔을 경우 새로운 채팅방 생성성
                 ChatRoom chatRoomCreated = iChatRoomRepository.save(
                         ChatRoom.builder()
@@ -353,7 +353,7 @@ public class ChatServiceImpl implements IChatService {
                 chatRoomId = chatRoomCreated.getId();
             }
 
-       }
+        }
 
         return chatRoomId;
     }
