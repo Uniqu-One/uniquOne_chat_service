@@ -1,11 +1,12 @@
 package com.sparos.uniquone.msachatservice.utils.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.sparos.uniquone.msachatservice.utils.response.ExceptionCode;
+import com.sparos.uniquone.msachatservice.utils.response.UniquOneServiceException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -114,6 +115,23 @@ public class JwtProvider {
                         .signWith(getKey(key), SignatureAlgorithm.HS256)
                         .compact()
         );
+    }
+
+    //토큰검증 얘로 쓸거임.
+    public static boolean validateToken(String barerToken) {
+        try {
+            String token = barerToken.replace("Bearer ", "");
+            Jwts.parserBuilder().setSigningKey(getKey(key)).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            throw new UniquOneServiceException(ExceptionCode.INVALID_TOKEN, HttpStatus.OK);
+        } catch (ExpiredJwtException e) {
+            throw new UniquOneServiceException(ExceptionCode.Expired_TOKEN, HttpStatus.OK);
+        } catch (UnsupportedJwtException e) {
+            throw new UniquOneServiceException(ExceptionCode.UNSUPPORTED_TOKEN, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            throw new UniquOneServiceException(ExceptionCode.EMPTY_PAYLOAD_TOKEN, HttpStatus.OK);
+        }
     }
 
     private static Key getKey(String key) {
