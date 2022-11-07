@@ -6,12 +6,15 @@ import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
 import com.sparos.uniquone.msachatservice.chat.service.IChatService;
+import com.sparos.uniquone.msachatservice.utils.jwt.JwtProvider;
 import com.sparos.uniquone.msachatservice.utils.response.SuccessCode;
 import com.sparos.uniquone.msachatservice.utils.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,22 +33,38 @@ public class ChatController {
     // 유저 채팅방 목록
     @GetMapping("")
     public ResponseEntity<SuccessResponse> findAllUserRoom(HttpServletRequest request) {
-        JSONObject jsonObject = iChatRoomService.findAllUserRoom(request);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(token)) {
+            if (JwtProvider.validateToken(token)) ;
+            JSONObject jsonObject = iChatRoomService.findAllUserRoom(request);
+            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+        }
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_NOT_TOKEN_CODE, "토큰이없습니다."));
     }
 
     // 채팅방 생성
     @PostMapping("/room")
     public ResponseEntity<SuccessResponse> createRoom(@RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
-        JSONObject jsonObject = iChatRoomService.createRoom(chatRoomDto, request);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(token)) {
+            if (JwtProvider.validateToken(token)) ;
+            JSONObject jsonObject = iChatRoomService.createRoom(chatRoomDto, request);
+            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+        }
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_NOT_TOKEN_CODE, "토큰이없습니다."));
     }
 
     // 채팅방 나가기
     @PatchMapping("/room")
     public ResponseEntity<SuccessResponse> exitRoom(@RequestBody Map<String,String> chatRoomId, HttpServletRequest request) {
-        JSONObject jsonObject = iChatRoomService.exitRoom(chatRoomId.get("chatRoomId"), request);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(token)) {
+            if (JwtProvider.validateToken(token)) ;
+            JSONObject jsonObject = iChatRoomService.exitRoom(chatRoomId.get("chatRoomId"), request);
+            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+        }
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_NOT_TOKEN_CODE, "토큰이없습니다."));
     }
 
     // 채팅방 삭제
@@ -58,8 +77,13 @@ public class ChatController {
     // 채팅 내용 가져오기
     @GetMapping("/room/all/{roomId}")
     public ResponseEntity<SuccessResponse> findAllChat(@PathVariable String roomId, HttpServletRequest request) {
-        JSONObject jsonObject = iChatRoomService.findAllChat(roomId, request);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(token)) {
+            if (JwtProvider.validateToken(token)) ;
+            JSONObject jsonObject = iChatRoomService.findAllChat(roomId, request);
+            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
+        }
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_NOT_TOKEN_CODE, "토큰이없습니다."));
     }
 
     // 토픽 조회
