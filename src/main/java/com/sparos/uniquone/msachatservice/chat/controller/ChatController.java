@@ -98,8 +98,8 @@ public class ChatController {
         iChatRoomService.offerChat(chatRoomDto, token);
     }
 
-    // offer 수락 일 때 채팅방 생성 -> chatRoomId 리턴
-    @GetMapping("/offer/roomId")
+    // 오퍼 chatRoomId
+    @PostMapping("/offer/roomId")
     String offerChat(@RequestParam("postId") Long postId, @RequestParam("userId") Long userId, @RequestParam("receiverId") Long receiverId){
         return iChatRoomService.offerChat(postId, userId, receiverId);
     }

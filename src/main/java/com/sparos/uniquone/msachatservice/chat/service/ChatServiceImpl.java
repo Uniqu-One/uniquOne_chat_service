@@ -273,7 +273,7 @@ public class ChatServiceImpl implements IChatService {
     public void offerChat(ChatRoomDto chatRoomDto, String token) {
 
         Long userId = JwtProvider.getUserPkId(token);
-        Long receiverId = iPostConnect.getUserIdByCorn(chatRoomDto.getPostId());
+        Long receiverId = chatRoomDto.getReceiverId();
         Optional<ChatRoom> existChatRoom =
                 iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
                         (chatRoomDto.getPostId(), true, true, userId, receiverId,
@@ -311,12 +311,13 @@ public class ChatServiceImpl implements IChatService {
                 Chat.builder()
                         .senderId(userId)
                         .chatRoomId(chatRoom.getId())
-                        .message("오퍼가 수락되었습니다. 오퍼가격 : N원")
+                        .message("오퍼가 수락되었습니다. 오퍼가격 : " + chatRoomDto.getPostPrice() + "->" + chatRoomDto.getOfferPrice())
                         .type(ChatType.NOTICE)
                         .build());
 
     }
 
+    // 오퍼 상세 chatRoomId
     @Override
     public String offerChat(Long postId, Long userId, Long receiverId) {
 
