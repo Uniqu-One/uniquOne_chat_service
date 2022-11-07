@@ -223,12 +223,12 @@ public class ChatServiceImpl implements IChatService {
                         .type(chatDto.getType())
                         .build());
 
-        iPostConnect.chatPush(
+/*        iPostConnect.chatPush(
                 ChatPushDto.builder()
                         .receiverId(chatRoom.getReceiverId())
                         .postId(chatRoom.getPostId())
                         .chat(chat)
-                        .build());
+                        .build());*/
 
         return chat;
     }
