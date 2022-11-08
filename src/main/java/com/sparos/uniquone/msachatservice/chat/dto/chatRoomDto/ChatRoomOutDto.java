@@ -1,6 +1,7 @@
 package com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto;
 
 import com.sparos.uniquone.msachatservice.utils.enums.ChatRoomType;
+import com.sparos.uniquone.msachatservice.utils.enums.PostType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class ChatRoomOutDto {
 
     private Long postId;
     private String postImg;
-    private String postType;
+    private PostType postType;
 
     private String message;
     private String msgRegDate;

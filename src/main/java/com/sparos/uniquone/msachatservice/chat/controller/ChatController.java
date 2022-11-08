@@ -2,6 +2,7 @@ package com.sparos.uniquone.msachatservice.chat.controller;
 
 import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomCreateDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRepository;
 import com.sparos.uniquone.msachatservice.chat.repository.IChatRoomRepository;
@@ -28,12 +29,10 @@ import java.util.Map;
 public class ChatController {
 
     private final IChatService iChatRoomService;
-    private final IChatRepository iChatRepository;
 
     // 유저 채팅방 목록
     @GetMapping("")
     public ResponseEntity<SuccessResponse> findAllUserRoom(HttpServletRequest request) {
-
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(token)) {
             if (JwtProvider.validateToken(token)) ;
@@ -45,11 +44,11 @@ public class ChatController {
 
     // 채팅방 생성
     @PostMapping("/room")
-    public ResponseEntity<SuccessResponse> createRoom(@RequestBody ChatRoomDto chatRoomDto, HttpServletRequest request) {
+    public ResponseEntity<SuccessResponse> createRoom(@RequestBody ChatRoomCreateDto chatRoomCreateDto, HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(token)) {
             if (JwtProvider.validateToken(token)) ;
-            JSONObject jsonObject = iChatRoomService.createRoom(chatRoomDto, request);
+            JSONObject jsonObject = iChatRoomService.createRoom(chatRoomCreateDto, request);
             return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_CODE, jsonObject.get("data")));
         }
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.SUCCESS_NOT_TOKEN_CODE, "토큰이없습니다."));
@@ -104,12 +103,6 @@ public class ChatController {
         return iChatRoomService.offerChat(postId, userId, receiverId);
     }
 
-    // test
-    @GetMapping("/test")
-    public String test() {
-        return "hello";
-    }
-
     // todo 미사용
     // 모든 채팅방 목록 반환
     @GetMapping("/rooms")
@@ -121,12 +114,6 @@ public class ChatController {
     @GetMapping("/room/{roomId}")
     public ChatRoom roomInfo(@PathVariable String roomId) {
         return iChatRoomService.findRoomById(roomId);
-    }
-
-    // dbTest
-    @GetMapping("/dbTest/{roomId}")
-    public Chat test(@PathVariable String roomId) {
-        return iChatRepository.findOneByChatRoomId(roomId).get();
     }
 
 }

@@ -31,6 +31,7 @@ public class ChatUtils {
                 .isReceiver(chatRoom.getIsReceiver())
                 .cornImg(postResponseDto.getCornImg())
                 .postId(postResponseDto.getPostId())
+                .postType(postResponseDto.getPostType())
                 .postImg(postResponseDto.getPostImg())
                 .message(chat.getMessage())
                 .msgRegDate(converter(chat.getRegDate()))
