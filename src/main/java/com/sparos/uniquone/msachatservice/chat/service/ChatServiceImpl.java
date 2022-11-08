@@ -67,9 +67,8 @@ public class ChatServiceImpl implements IChatService {
         JSONObject jsonObject = new JSONObject();
 
         List<ChatRoom> chatRooms = iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true);
-        System.err.println(chatRooms.get(0));
+
         if (chatRooms.isEmpty()) {
-            System.err.println("isEmpty");
             throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
         }
 
