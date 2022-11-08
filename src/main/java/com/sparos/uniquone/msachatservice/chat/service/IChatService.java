@@ -3,6 +3,7 @@ package com.sparos.uniquone.msachatservice.chat.service;
 import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomCreateDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import org.json.JSONObject;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -24,7 +25,7 @@ public interface IChatService {
     ChatRoom findRoomById(String roomId);
 
     // 채팅방 생성
-    JSONObject createRoom(ChatRoomDto chatRoomDto, HttpServletRequest request);
+    JSONObject createRoom(ChatRoomCreateDto chatRoomCreateDto, HttpServletRequest request);
 
     // 채팅방 나가기
     JSONObject exitRoom(String chatRoomId, HttpServletRequest request);

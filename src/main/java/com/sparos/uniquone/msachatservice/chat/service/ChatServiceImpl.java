@@ -3,6 +3,7 @@ package com.sparos.uniquone.msachatservice.chat.service;
 import com.sparos.uniquone.msachatservice.chat.domain.Chat;
 import com.sparos.uniquone.msachatservice.chat.domain.ChatRoom;
 import com.sparos.uniquone.msachatservice.chat.dto.chatDto.ChatDto;
+import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomCreateDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomDto;
 import com.sparos.uniquone.msachatservice.chat.dto.chatRoomDto.ChatRoomOutDto;
 import com.sparos.uniquone.msachatservice.outband.post.dto.ChatPushDto;
@@ -66,8 +67,9 @@ public class ChatServiceImpl implements IChatService {
         JSONObject jsonObject = new JSONObject();
 
         List<ChatRoom> chatRooms = iChatRoomRepository.findByActorIdAndIsActorOrReceiverIdAndIsReceiver(userId, true, userId, true);
-
+        System.err.println(chatRooms.get(0));
         if (chatRooms.isEmpty()) {
+            System.err.println("isEmpty");
             throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
         }
 
@@ -77,14 +79,19 @@ public class ChatServiceImpl implements IChatService {
                 chatRoom.setReceiver(chatRoom.getIsActor());
                 chatRoom.setChatType(chatRoom.getChatType().equals(ChatRoomType.BUYER) ? ChatRoomType.SELLER : ChatRoomType.BUYER);
             }
-            Chat chat = iChatRepository.findOneByChatRoomId(chatRoom.getId())
-                    .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
-            ChatRoomOutDto chatRoomOutDto = ChatUtils.entityToChatRoomOutDto(
-                    chat,
-                    chatRoom,
-                    iUserConnect.getUserInfo(chatRoom.getReceiverId()),
-                    iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()));
-            return chatRoomOutDto;
+            Optional<Chat> chat = iChatRepository.findOneByChatRoomId(chatRoom.getId());
+
+            if (!chat.isPresent()){
+                iChatRoomRepository.deleteById(chatRoom.getId());
+                return null;
+            } else {
+                ChatRoomOutDto chatRoomOutDto = ChatUtils.entityToChatRoomOutDto(
+                        chat.get(),
+                        chatRoom,
+                        iUserConnect.getUserInfo(chatRoom.getReceiverId()),
+                        iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()));
+                return chatRoomOutDto;
+            }
         }).collect(Collectors.toList());
 
         jsonObject.put("data", chatRoomOutDtos.toArray());
@@ -94,17 +101,17 @@ public class ChatServiceImpl implements IChatService {
 
     // 채팅방 생성
     @Override
-    public JSONObject createRoom(ChatRoomDto chatRoomDto, HttpServletRequest request) {
+    public JSONObject createRoom(ChatRoomCreateDto chatRoomCreateDto, HttpServletRequest request) {
 
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
-        Long receiverId = iPostConnect.getUserIdByCorn(chatRoomDto.getPostId());
+        Long receiverId = iPostConnect.getUserIdByCorn(chatRoomCreateDto.getPostId());
 
         if (!userId.equals(receiverId)) {
             Optional<ChatRoom> existChatRoom =
                     iChatRoomRepository.findOneByPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverIdOrPostIdAndIsActorAndIsReceiverAndActorIdAndReceiverId
-                            (chatRoomDto.getPostId(), true, true, userId, receiverId,
-                                    chatRoomDto.getPostId(), true, true, receiverId, userId);
+                            (chatRoomCreateDto.getPostId(), true, true, userId, receiverId,
+                                    chatRoomCreateDto.getPostId(), true, true, receiverId, userId);
 
             Boolean existPost = false;
 
@@ -114,11 +121,11 @@ public class ChatServiceImpl implements IChatService {
 
             } else {
 
-                if (chatRoomDto.getChatType().equals(ChatRoomType.BUYER)) {
-                    existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), receiverId);
+                if (chatRoomCreateDto.getChatType().equals(ChatRoomType.BUYER)) {
+                    existPost = iPostConnect.getExistPost(chatRoomCreateDto.getPostId(), receiverId);
 
-                } else if (chatRoomDto.getChatType().equals(ChatRoomType.SELLER)) {
-                    existPost = iPostConnect.getExistPost(chatRoomDto.getPostId(), userId);
+                } else if (chatRoomCreateDto.getChatType().equals(ChatRoomType.SELLER)) {
+                    existPost = iPostConnect.getExistPost(chatRoomCreateDto.getPostId(), userId);
                 }
 
                 if (!existPost.equals(true)) {
@@ -126,10 +133,10 @@ public class ChatServiceImpl implements IChatService {
                 }
                 ChatRoom chatRoom = iChatRoomRepository.save(
                         ChatRoom.builder()
-                                .chatType(chatRoomDto.getChatType())
+                                .chatType(chatRoomCreateDto.getChatType())
                                 .actorId(userId)
                                 .receiverId(receiverId)
-                                .postId(chatRoomDto.getPostId())
+                                .postId(chatRoomCreateDto.getPostId())
                                 .isActor(true)
                                 .isReceiver(true)
 //                                .regDate(chatRoomDto.getRegDate())
@@ -180,14 +187,13 @@ public class ChatServiceImpl implements IChatService {
     // 채팅 내용 조회
     @Override
     public JSONObject findAllChat(String roomId, HttpServletRequest request) {
-        System.err.println(roomId);
         JSONObject jsonObject = new JSONObject();
         Long userId = JwtProvider.getUserPkId(request);
-        ChatRoom chatRoomOptional = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(roomId, userId, roomId, userId)
+
+        ChatRoom chatRoom = iChatRoomRepository.findByIdAndActorIdOrIdAndReceiverId(roomId, userId, roomId, userId)
                 .orElseThrow(() -> new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED));
 
         List<Chat> chats = iChatRepository.findByChatRoomId(roomId);
-        ChatRoom chatRoom = chatRoomOptional;
 
         if (chats.isEmpty()) {
             chats = null;
