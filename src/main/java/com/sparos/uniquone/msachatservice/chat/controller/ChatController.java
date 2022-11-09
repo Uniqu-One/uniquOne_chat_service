@@ -98,7 +98,7 @@ public class ChatController {
     }
 
     // 오퍼 chatRoomId
-    @PostMapping("/offer/roomId")
+    @GetMapping("/offer/roomId")
     String offerChat(@RequestParam("postId") Long postId, @RequestParam("userId") Long userId, @RequestParam("receiverId") Long receiverId){
         return iChatRoomService.offerChat(postId, userId, receiverId);
     }
