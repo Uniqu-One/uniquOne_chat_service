@@ -68,6 +68,58 @@ CI/CD,클라우드 서비스(AWS), 상품,팔로우, 좋아요 <br>
 <br>
 <br>
 
+## 📔 채팅 서비스 디렉토리 구조
+```
+project
+├─ public
+│   └─ img   
+│   
+│   
+├─ src
+│   ├─main
+│   │ ├─java
+│   │ │  ├─ chat
+│   │ │  │   ├─ controller
+│   │ │  │   ├─ domain
+│   │ │  │   ├─ dto
+│   │ │  │   ├─ repository
+│   │ │  │   └─ service
+│   │ │  ├─ config
+│   │ │  │   ├─ AuditingConfig.java
+│   │ │  │   ├─ AuditorAwareImpl.java
+│   │ │  │   ├─ RedisConfig.java
+│   │ │  │   └─ WebSockConfig.java
+│   │ │  ├─ outband
+│   │ │  │   ├─ post
+│   │ │  │   │   ├─ dto
+│   │ │  │   │   └─ service
+│   │ │  │   └─ user
+│   │ │  │       ├─ dto
+│   │ │  │       └─ service
+│   │ │  ├─ utils
+│   │ │  │   ├─ enums
+│   │ │  │   ├─ jwt
+│   │ │  │   ├─ exception_response
+│   │ │  │   ├─ ChatUtils.java
+│   │ │  │   └─ ControllerExceptionHandler.java
+│   │ │  └─ MsaChatServiceApplication.java
+│   │ │
+│   │ │     
+│   │ └─ resources
+│   │       ├─ application.yml
+│   │       └─ bootstrap.yml
+│   │
+│   └─ test
+│   
+│   
+├─ .gitignore
+├─ build.gradle
+├─ Dockerfile
+├─ gradlew
+├─ gradlew.bat
+├─ settings.gradle
+└─ README.md
+``` 
 
 
 <br>
