@@ -72,7 +72,9 @@ public class ChatServiceImpl implements IChatService {
             throw new UniquOneServiceException(ExceptionCode.NO_SUCH_ELEMENT_EXCEPTION, HttpStatus.ACCEPTED);
         }
 
-        List<ChatRoomOutDto> chatRoomOutDtos = chatRooms.stream().map(chatRoom -> {
+        List<ChatRoomOutDto> chatRoomOutDtos = new ArrayList<>();
+
+        for (ChatRoom chatRoom : chatRooms) {
             if (chatRoom.getReceiverId().equals(userId)) {
                 chatRoom.setReceiverId(chatRoom.getActorId());
                 chatRoom.setReceiver(chatRoom.getIsActor());
@@ -82,16 +84,16 @@ public class ChatServiceImpl implements IChatService {
 
             if (!chat.isPresent()){
                 iChatRoomRepository.deleteById(chatRoom.getId());
-                return null;
+                continue;
             } else {
                 ChatRoomOutDto chatRoomOutDto = ChatUtils.entityToChatRoomOutDto(
                         chat.get(),
                         chatRoom,
                         iUserConnect.getUserInfo(chatRoom.getReceiverId()),
                         iPostConnect.getPostInfo(chatRoom.getPostId(), chatRoom.getReceiverId()));
-                return chatRoomOutDto;
+                chatRoomOutDtos.add(chatRoomOutDto);
             }
-        }).collect(Collectors.toList());
+        }
 
         jsonObject.put("data", chatRoomOutDtos.toArray());
 
