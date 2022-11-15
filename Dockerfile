@@ -1,3 +1,4 @@
-FROM openjdk:11
-COPY build/libs/*.jar uniquone_chat_img.jar
-ENTRYPOINT ["java", "-jar", "uniquone_chat_img.jar"]
+FROM adoptopenjdk/openjdk11
+COPY build/libs/msa_chat_service-0.0.1-SNAPSHOT.jar app/chat-service.jar
+WORKDIR /app
+ENTRYPOINT ["java", "-jar", "chat-service.jar"]
